@@ -91,6 +91,16 @@ def main():
             print("Artifacts not found yet. Run the storyworld builder and re-run gym_run.py.")
             return
 
+    if mlflow:
+        manifest_path = os.path.join(run_root, "run_manifest.json")
+        if os.path.exists(manifest_path):
+            manifest = read_json(manifest_path)
+            codex_exec = manifest.get("codex_exec", {})
+            status = codex_exec.get("status", "")
+            if status:
+                log_metrics(mlflow, {"codex_status_timeout": 1 if status == "aborted" else 0})
+                log_metrics(mlflow, {"codex_status_failed": 1 if status == "failed" else 0})
+
     if cfg.get("verifier", {}).get("enabled", True):
         verify_cmd = ["python", os.path.join(config_dir, "gym_verify_storyworld.py"), "--config", args.config]
         print("Running:", " ".join(verify_cmd))

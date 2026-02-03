@@ -80,6 +80,41 @@ def validate_encounter(encounter):
     return True, ""
 
 
+def validate_spools(world, encounter_ids):
+    spools = world.get("spools")
+    if spools is None:
+        return True, ""
+    if not isinstance(spools, list) or len(spools) == 0:
+        return False, "spools_invalid"
+    spool_ids = set()
+    for spool in spools:
+        if not isinstance(spool, dict):
+            return False, "spool_not_object"
+        spool_id = spool.get("id")
+        if not spool_id:
+            return False, "spool_missing_id"
+        spool_ids.add(spool_id)
+        enc_list = spool.get("encounters")
+        if enc_list is None or not isinstance(enc_list, list):
+            return False, "spool_missing_encounters"
+        for enc_id in enc_list:
+            if enc_id not in encounter_ids:
+                return False, "spool_encounter_ref_missing"
+
+    encounters = world.get("encounters", [])
+    for enc in encounters:
+        connected = enc.get("connected_spools", [])
+        if connected is None:
+            continue
+        if not isinstance(connected, list):
+            return False, "connected_spools_invalid"
+        for sp_id in connected:
+            if sp_id not in spool_ids:
+                return False, "connected_spool_ref_missing"
+
+    return True, ""
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=True)
@@ -157,6 +192,12 @@ def main():
             if not ok:
                 result["reasons"].append(reason)
                 break
+
+        if not result["reasons"]:
+            encounter_ids = {enc.get("id") for enc in nodes if isinstance(enc, dict)}
+            ok, reason = validate_spools(world, encounter_ids)
+            if not ok:
+                result["reasons"].append(reason)
 
     if result["reasons"]:
         print(json.dumps(result))

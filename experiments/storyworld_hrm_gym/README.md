@@ -27,7 +27,7 @@ skill. You can run that skill manually, or enable the optional Codex CLI hook.
 Edit `gym_config.json`. Paths are relative to the config file unless absolute.
 If you want the runner to wait for artifacts, set `wait_for_artifacts: true`.
 Verifier is enabled by default; it blocks training until artifacts are validated.
-Sweepweave-style storyworlds with `encounters`/`options`/`reactions` are supported.
+Sweepweave-style storyworlds with `encounters`/`options`/`reactions` and `spools` are supported.
 
 ## Optional Codex CLI hook
 
