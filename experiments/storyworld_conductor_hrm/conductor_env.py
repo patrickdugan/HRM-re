@@ -76,6 +76,21 @@ def analyze_storyworld(path: str, mc_runs: int = 200, seed: int = 42) -> Storywo
     )
 
 
+def benchmark_metrics(path: str, mc_runs: int = 200, seed: int = 42) -> Dict[str, float]:
+    env = _load_storyworld_env()
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return env.evaluate_benchmark(data, runs=mc_runs, seed=seed)
+
+
+def benchmark_pass(path: str, mc_runs: int = 200, seed: int = 42) -> bool:
+    env = _load_storyworld_env()
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    metrics = env.evaluate_benchmark(data, runs=mc_runs, seed=seed)
+    return env.benchmark_pass(metrics)
+
+
 def summarize_state(m: StoryworldMetrics) -> str:
     error_text = "; ".join(m.errors[:6]) if m.errors else "none"
     return (
