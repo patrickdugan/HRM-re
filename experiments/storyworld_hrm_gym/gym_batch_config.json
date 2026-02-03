@@ -1,0 +1,8 @@
+{
+  "base_dir": "D:/HRMStoryworlds",
+  "target_verified": 200,
+  "start_index": 1,
+  "codex_enabled": true,
+  "wait_for_artifacts": true,
+  "timeout_seconds": 900
+}

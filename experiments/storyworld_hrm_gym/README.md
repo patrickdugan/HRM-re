@@ -21,6 +21,8 @@ skill. You can run that skill manually, or enable the optional Codex CLI hook.
 
 5. `gym_run.py`
    - Orchestrates all steps; still requires manual storyworld generation.
+6. `gym_batch_generate.py`
+   - Runs `gym_run.py` repeatedly until `target_verified` storyworlds are accepted.
 
 ## Config
 
@@ -28,6 +30,14 @@ Edit `gym_config.json`. Paths are relative to the config file unless absolute.
 If you want the runner to wait for artifacts, set `wait_for_artifacts: true`.
 Verifier is enabled by default; it blocks training until artifacts are validated.
 Sweepweave-style storyworlds with `encounters`/`options`/`reactions` and `spools` are supported.
+
+## Batch generation to D:\
+
+Edit `gym_batch_config.json` to point to `D:/HRMStoryworlds`, then run:
+
+```powershell
+python experiments/storyworld_hrm_gym/gym_batch_generate.py --config experiments/storyworld_hrm_gym/gym_batch_config.json
+```
 
 ## Optional Codex CLI hook
 
