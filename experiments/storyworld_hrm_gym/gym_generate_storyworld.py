@@ -147,7 +147,7 @@ Output files:
                 manifest = read_json(manifest_path)
             manifest["codex_exec"] = codex_result
             write_json(manifest_path, manifest)
-            raise RuntimeError(f\"codex exec failed with code {last_returncode}\")
+            raise RuntimeError(f"codex exec failed with code {last_returncode}")
 
     manifest_path = os.path.join(run_root, "run_manifest.json")
     manifest = {
