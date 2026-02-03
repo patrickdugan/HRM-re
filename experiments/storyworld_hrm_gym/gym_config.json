@@ -24,6 +24,13 @@
     "output_world": "world.json",
     "output_encounters": "encounters.jsonl"
   },
+  "codex_exec": {
+    "enabled": false,
+    "mode": "",
+    "sandbox": "",
+    "output_last_message": "prompts/codex_last_message.txt",
+    "working_dir": ""
+  },
   "wait_for_artifacts": false,
   "wait_timeout_seconds": 900,
   "wait_poll_seconds": 10,

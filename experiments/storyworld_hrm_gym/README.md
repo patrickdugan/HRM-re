@@ -28,6 +28,24 @@ that skill to produce the artifacts.
 Edit `gym_config.json`. Paths are relative to the config file unless absolute.
 If you want the runner to wait for artifacts, set `wait_for_artifacts: true`.
 
+## Optional Codex CLI hook
+
+If you have the official `codex` CLI authenticated, you can enable automatic
+execution by setting `codex_exec.enabled: true` and providing the appropriate
+flags. The prompt will still reference the `storyworld-building` skill.
+
+Example:
+
+```json
+"codex_exec": {
+  "enabled": true,
+  "mode": "full-auto",
+  "sandbox": "danger-full-access",
+  "output_last_message": "prompts/codex_last_message.txt",
+  "working_dir": ""
+}
+```
+
 ## MLflow (optional)
 
 Use `mlflow_interface.py` to optionally log params/metrics/artifacts. Add

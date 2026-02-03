@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import subprocess
 import sys
 from datetime import datetime, timezone
 
@@ -29,6 +30,11 @@ def resolve_path(root, path):
     if os.path.isabs(path):
         return path
     return os.path.normpath(os.path.join(root, path))
+
+
+def run(cmd, cwd=None):
+    print("Running:", " ".join(cmd))
+    subprocess.check_call(cmd, cwd=cwd)
 
 
 def main():
@@ -68,6 +74,27 @@ Output files:
 
     with open(prompt_path, "w", encoding="utf-8") as f:
         f.write(prompt + "\n")
+
+    codex_cfg = cfg.get("codex_exec", {})
+    if codex_cfg.get("enabled", False):
+        mode = codex_cfg.get("mode", "").strip()
+        sandbox = codex_cfg.get("sandbox", "").strip()
+        output_last = resolve_path(run_root, codex_cfg.get("output_last_message", ""))
+        if output_last:
+            ensure_dir(os.path.dirname(output_last))
+
+        cmd = ["codex", "exec"]
+        if mode:
+            cmd.append(f"--{mode}")
+        if sandbox:
+            cmd.extend(["--sandbox", sandbox])
+        if output_last:
+            cmd.extend(["--output-last-message", output_last])
+        cmd.append(prompt)
+
+        working_dir = codex_cfg.get("working_dir", "").strip()
+        cwd = resolve_path(config_dir, working_dir) if working_dir else None
+        run(cmd, cwd=cwd)
 
     manifest_path = os.path.join(run_root, "run_manifest.json")
     manifest = {
