@@ -48,6 +48,9 @@ def main():
     cfg = read_json(args.config)
     base_dir = cfg["base_dir"]
     target_verified = int(cfg.get("target_verified", 200))
+    max_attempts = int(cfg.get("max_attempts", 0))
+    max_size_bytes = int(cfg.get("max_size_bytes", 0))
+    end_time_local = cfg.get("end_time_local")
     start_index = int(cfg.get("start_index", 1))
     codex_enabled = bool(cfg.get("codex_enabled", True))
     wait_for_artifacts = bool(cfg.get("wait_for_artifacts", True))
@@ -66,8 +69,17 @@ def main():
 
     verified_count = len([f for f in os.listdir(verified_dir) if f.endswith(".json")])
     idx = start_index
+    attempts = 0
+    end_time = None
+    if end_time_local:
+        end_time = datetime.fromisoformat(end_time_local)
 
     while verified_count < target_verified:
+        if max_attempts and attempts >= max_attempts:
+            break
+        if end_time and datetime.now() >= end_time:
+            break
+
         run_id = f"run_{idx:04d}"
         run_root = os.path.join(runs_dir, run_id)
         ensure_dir(run_root)
@@ -88,14 +100,19 @@ def main():
             verifier = manifest.get("verifier", {})
             if verifier.get("status") == "verified":
                 world_path = os.path.join(run_root, "storyworld", "world.json")
-                dest = os.path.join(verified_dir, f"{run_id}.json")
-                copy_if_exists(world_path, dest)
-                verified_count += 1
+                if max_size_bytes and os.path.exists(world_path) and os.path.getsize(world_path) > max_size_bytes:
+                    dest = os.path.join(rejected_dir, f"{run_id}.json")
+                    copy_if_exists(world_path, dest)
+                else:
+                    dest = os.path.join(verified_dir, f"{run_id}.json")
+                    copy_if_exists(world_path, dest)
+                    verified_count += 1
             elif verifier.get("status") == "failed":
                 world_path = os.path.join(run_root, "storyworld", "world.json")
                 dest = os.path.join(rejected_dir, f"{run_id}.json")
                 copy_if_exists(world_path, dest)
 
+        attempts += 1
         idx += 1
 
     summary_path = os.path.join(base_dir, "batch_summary.json")
@@ -105,6 +122,10 @@ def main():
             "completed_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
             "verified": verified_count,
             "target": target_verified,
+            "attempts": attempts,
+            "max_attempts": max_attempts,
+            "end_time_local": end_time_local,
+            "max_size_bytes": max_size_bytes,
         },
     )
 

@@ -33,7 +33,7 @@ Sweepweave-style storyworlds with `encounters`/`options`/`reactions` and `spools
 
 ## Batch generation to D:\
 
-Edit `gym_batch_config.json` to point to `D:/HRMStoryworlds`, then run:
+Edit `gym_batch_config.json` (end time, max attempts, and size cap), then run:
 
 ```powershell
 python experiments/storyworld_hrm_gym/gym_batch_generate.py --config experiments/storyworld_hrm_gym/gym_batch_config.json
