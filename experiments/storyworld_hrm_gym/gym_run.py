@@ -47,6 +47,7 @@ def main():
 
     cfg = read_json(args.config)
     config_dir = os.path.dirname(os.path.abspath(args.config))
+    script_dir = os.path.dirname(os.path.abspath(__file__))
     run_root = resolve_path(config_dir, cfg["paths"]["root"])
 
     os.makedirs(run_root, exist_ok=True)
@@ -68,7 +69,7 @@ def main():
         mlflow.start_run(run_name=cfg.get("run_id"))
         log_params(mlflow, {"run_id": cfg.get("run_id"), "seed": cfg.get("seed")})
 
-    run(["python", os.path.join(config_dir, "gym_generate_storyworld.py"), "--config", args.config])
+    run(["python", os.path.join(script_dir, "gym_generate_storyworld.py"), "--config", args.config])
     print("Step complete: storyworld prompt written. Generate artifacts, then continue.")
 
     storyworld_dir = os.path.join(run_root, cfg["paths"]["storyworld_dir"])
@@ -102,7 +103,7 @@ def main():
                 log_metrics(mlflow, {"codex_status_failed": 1 if status == "failed" else 0})
 
     if cfg.get("verifier", {}).get("enabled", True):
-        verify_cmd = ["python", os.path.join(config_dir, "gym_verify_storyworld.py"), "--config", args.config]
+        verify_cmd = ["python", os.path.join(script_dir, "gym_verify_storyworld.py"), "--config", args.config]
         print("Running:", " ".join(verify_cmd))
         verify_proc = subprocess.run(verify_cmd, capture_output=True, text=True)
         if verify_proc.returncode != 0:
@@ -122,9 +123,9 @@ def main():
             if mlflow:
                 log_metrics(mlflow, {"verifier_failed": 0})
 
-    run(["python", os.path.join(config_dir, "gym_make_dataset.py"), "--config", args.config])
-    run(["python", os.path.join(config_dir, "gym_train_player.py"), "--config", args.config])
-    run(["python", os.path.join(config_dir, "gym_eval.py"), "--config", args.config])
+    run(["python", os.path.join(script_dir, "gym_make_dataset.py"), "--config", args.config])
+    run(["python", os.path.join(script_dir, "gym_train_player.py"), "--config", args.config])
+    run(["python", os.path.join(script_dir, "gym_eval.py"), "--config", args.config])
 
     if mlflow:
         manifest_path = os.path.join(run_root, "run_manifest.json")
