@@ -64,7 +64,7 @@ python .\run_full_bench.py --out .\reports\full_index.json --steps 6 --mc_runs 2
 ## Player HRM dataset + training
 
 ```powershell
-python .\make_player_dataset.py --storyworld_dir "C:\projects\GPTStoryworld\storyworlds" --episodes_per_storyworld 100 --out .\data_player.jsonl
+python .\make_player_dataset.py --storyworld_dir "C:\projects\GPTStoryworld\storyworlds" --episodes_per_storyworld 100 --out .\data_player.jsonl --subset mihna_constitutional_alignment.json ottoman_qadi.json gaza_doctor.json first_and_last_men_complete.json
 python ..\storyworld_secret_ending\train_hrm_storyworld.py --data .\data_player.jsonl --out .\models_player.pt --epochs 3 --batch_size 8 --lr 2e-4 --dim 64 --depth 1 --heads 1
 ```
 

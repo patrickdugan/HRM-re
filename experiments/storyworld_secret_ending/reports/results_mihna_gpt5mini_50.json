@@ -1,0 +1,37 @@
+{
+  "storyworld_id": "The Mihna: Constitutional Alignment",
+  "target_ending_id": "page_end_compliant",
+  "max_turns": 25,
+  "agents": {
+    "hrm": {
+      "success_rate": 0.015,
+      "median_turns_to_success": 16,
+      "mean_turns": 15.53,
+      "timeout_rate": 0.0
+    },
+    "random": {
+      "success_rate": 0.005,
+      "median_turns_to_success": 17,
+      "mean_turns": 15.88,
+      "timeout_rate": 0.0
+    },
+    "greedy": {
+      "success_rate": 0.0,
+      "median_turns_to_success": null,
+      "mean_turns": 16.955,
+      "timeout_rate": 0.0
+    },
+    "tiny_open_stub": {
+      "success_rate": 0.0,
+      "median_turns_to_success": null,
+      "mean_turns": 16,
+      "timeout_rate": 0.0
+    },
+    "gpt5mini": {
+      "success_rate": 0.04,
+      "median_turns_to_success": 15.5,
+      "mean_turns": 15.52,
+      "timeout_rate": 0.0
+    }
+  }
+}

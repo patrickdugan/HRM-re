@@ -69,12 +69,16 @@ def main():
     parser.add_argument("--episodes_per_storyworld", type=int, default=50)
     parser.add_argument("--max_turns", type=int, default=25)
     parser.add_argument("--seed", type=int, default=123)
+    parser.add_argument("--subset", nargs="*", default=None)
     args = parser.parse_args()
 
     rng = random.Random(args.seed)
     records = []
+    subset = set(args.subset) if args.subset else None
     for entry in os.listdir(args.storyworld_dir):
         if not entry.endswith(".json"):
+            continue
+        if subset and entry not in subset:
             continue
         sw_path = os.path.join(args.storyworld_dir, entry)
         target = choose_target_ending_id(sw_path)

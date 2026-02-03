@@ -1,0 +1,11 @@
+You are a fresh context Codex instance. Do NOT use any OpenAI API calls or auth checks. The goal is to run the local storyworld harness “raw” and report results from local agents only (HRM + baselines that do not require API).
+
+Steps:
+1) cd to C:\projects\HRM-re\experiments\storyworld_secret_ending
+2) Run eval without any GPT API:
+   python .\eval_storyworld.py --storyworld "C:\projects\GPTStoryworld\storyworlds\mihna_constitutional_alignment.json" --target_ending_id page_end_compliant --max_turns 25 --episodes 200 --gpt_episodes 0 --gpt_mock --hrm_model .\models\hrm_mihna_constitutional_alignment.pt --report .\reports\results_mihna_localonly.json
+3) Summarize the metrics in the report for hrm, random, greedy, tiny_open_stub, and gpt5mini_mock.
+
+Notes:
+- Do not attempt any network auth.
+- Use only local models and mocks.

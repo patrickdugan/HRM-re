@@ -1,0 +1,256 @@
+{
+  "id": "mihna_min",
+  "variables": {
+    "rationality": {"min": 0, "max": 100, "start": 50},
+    "favor": {"min": 0, "max": 100, "start": 50},
+    "suspicion": {"min": 0, "max": 100, "start": 30}
+  },
+  "hidden_variables": {
+    "risky_pact": {"type": "bool", "start": false}
+  },
+  "nodes": [
+    {
+      "id": "courtyard_entry",
+      "text": "You enter the courtyard as scholars argue over doctrine.",
+      "choices": [
+        {
+          "id": "study_academy",
+          "text": "Study at the academy.",
+          "to": "academy",
+          "effects": {"rationality": 10, "suspicion": -5}
+        },
+        {
+          "id": "seek_patron",
+          "text": "Seek a patron's protection.",
+          "to": "patrons_house",
+          "effects": {"favor": 10, "suspicion": 5}
+        },
+        {
+          "id": "visit_archives",
+          "text": "Visit the archives.",
+          "to": "archives",
+          "effects": {"rationality": 5}
+        },
+        {
+          "id": "approach_inquisition",
+          "text": "Approach the inquisitors directly.",
+          "to": "inquisition",
+          "effects": {"suspicion": 15}
+        }
+      ]
+    },
+    {
+      "id": "academy",
+      "text": "The academy tests your arguments with strict logic.",
+      "choices": [
+        {
+          "id": "rigorous_study",
+          "text": "Endure rigorous study.",
+          "to": "debate_hall",
+          "effects": {"rationality": 15, "suspicion": 5}
+        },
+        {
+          "id": "discreet_research",
+          "text": "Research discreetly.",
+          "to": "archives",
+          "effects": {"rationality": 10, "suspicion": -5}
+        },
+        {
+          "id": "court_patronage",
+          "text": "Court patronage quietly.",
+          "to": "patrons_house",
+          "effects": {"favor": 10, "suspicion": -5}
+        }
+      ]
+    },
+    {
+      "id": "archives",
+      "text": "The archives whisper of forbidden texts.",
+      "choices": [
+        {
+          "id": "accept_risky_pact",
+          "text": "Accept a risky pact for secret knowledge.",
+          "to": "secret_passage",
+          "effects": {"rationality": 10, "suspicion": 10},
+          "hidden_effects": {"risky_pact": true}
+        },
+        {
+          "id": "refuse_pact",
+          "text": "Refuse the pact and leave quietly.",
+          "to": "debate_hall",
+          "effects": {"rationality": 5, "suspicion": -10}
+        },
+        {
+          "id": "steal_manuscript",
+          "text": "Steal a manuscript and flee.",
+          "to": "inquisition",
+          "effects": {"rationality": 15, "suspicion": 20}
+        }
+      ]
+    },
+    {
+      "id": "secret_passage",
+      "text": "A hidden passage leads to a quiet chamber.",
+      "choices": [
+        {
+          "id": "contemplate_doctrine",
+          "text": "Contemplate doctrine alone.",
+          "to": "debate_hall",
+          "effects": {"rationality": 10, "suspicion": -5}
+        },
+        {
+          "id": "meet_patrons",
+          "text": "Meet patrons in secret.",
+          "to": "patrons_house",
+          "effects": {"favor": 15, "suspicion": 5}
+        },
+        {
+          "id": "flee_city",
+          "text": "Flee the city.",
+          "to": "exile_gate",
+          "effects": {"favor": -20}
+        }
+      ]
+    },
+    {
+      "id": "debate_hall",
+      "text": "The debate hall demands public defense.",
+      "choices": [
+        {
+          "id": "public_defense",
+          "text": "Mount a public defense.",
+          "to": "tribunal",
+          "effects": {"favor": 10, "suspicion": 10}
+        },
+        {
+          "id": "measured_argument",
+          "text": "Offer a measured argument.",
+          "to": "patrons_house",
+          "effects": {"rationality": 10, "suspicion": -5}
+        },
+        {
+          "id": "appeal_judge",
+          "text": "Appeal directly to the judge.",
+          "to": "hall_of_judgment",
+          "effects": {"favor": 5, "suspicion": -5}
+        },
+        {
+          "id": "withdraw",
+          "text": "Withdraw to the courtyard.",
+          "to": "courtyard_entry",
+          "effects": {"suspicion": -5}
+        }
+      ]
+    },
+    {
+      "id": "patrons_house",
+      "text": "A patron weighs the political cost of supporting you.",
+      "choices": [
+        {
+          "id": "secure_endorsement",
+          "text": "Secure an endorsement.",
+          "to": "hall_of_judgment",
+          "effects": {"favor": 15, "suspicion": -5}
+        },
+        {
+          "id": "bribe_clerk",
+          "text": "Bribe a clerk to influence the trial.",
+          "to": "tribunal",
+          "effects": {"favor": 5, "suspicion": 10}
+        },
+        {
+          "id": "discreet_aid",
+          "text": "Request discreet aid.",
+          "to": "debate_hall",
+          "effects": {"favor": 5, "suspicion": -5}
+        }
+      ]
+    },
+    {
+      "id": "inquisition",
+      "text": "The inquisitors demand answers.",
+      "choices": [
+        {
+          "id": "defy_inquisitors",
+          "text": "Defy the interrogators.",
+          "to": "tribunal",
+          "effects": {"rationality": 10, "suspicion": 20}
+        },
+        {
+          "id": "recant",
+          "text": "Recant your positions.",
+          "to": "exile_gate",
+          "effects": {"rationality": -15, "suspicion": -20}
+        },
+        {
+          "id": "cooperate",
+          "text": "Cooperate and offer clarifications.",
+          "to": "debate_hall",
+          "effects": {"favor": 5, "suspicion": -10}
+        }
+      ]
+    },
+    {
+      "id": "hall_of_judgment",
+      "text": "The hall falls silent as judgment is prepared.",
+      "choices": [
+        {
+          "id": "plead_case",
+          "text": "Plead your case anew.",
+          "to": "debate_hall",
+          "effects": {"favor": 5, "suspicion": 5}
+        },
+        {
+          "id": "seek_patron_support",
+          "text": "Seek patron support again.",
+          "to": "patrons_house",
+          "effects": {"favor": 5, "suspicion": -5}
+        }
+      ]
+    },
+    {
+      "id": "tribunal",
+      "text": "The tribunal convenes amid rising tension.",
+      "choices": [
+        {
+          "id": "final_defense",
+          "text": "Make a final defense.",
+          "to": "debate_hall",
+          "effects": {"rationality": 5, "suspicion": 5}
+        }
+      ]
+    },
+    {
+      "id": "exile_gate",
+      "text": "The gates of exile stand open.",
+      "choices": [
+        {
+          "id": "accept_exile",
+          "text": "Accept exile and depart.",
+          "to": "courtyard_entry",
+          "effects": {"favor": -10, "suspicion": -10}
+        }
+      ]
+    }
+  ],
+  "endings": [
+    {
+      "id": "ending_condemned",
+      "type": "normal",
+      "node_id": "tribunal",
+      "condition": "suspicion>=60 OR rationality<40"
+    },
+    {
+      "id": "ending_exile",
+      "type": "normal",
+      "node_id": "exile_gate",
+      "condition": "favor<40 OR suspicion>=70"
+    },
+    {
+      "id": "ending_secret_created_quran_accepted",
+      "type": "secret",
+      "node_id": "hall_of_judgment",
+      "condition": "rationality>=85 AND favor>=75 AND suspicion<=40 AND risky_pact==true"
+    }
+  ]
+}

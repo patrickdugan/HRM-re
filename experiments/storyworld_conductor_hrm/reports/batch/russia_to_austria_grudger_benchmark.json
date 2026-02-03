@@ -1,0 +1,124 @@
+{
+  "input_storyworld": "C:\\projects\\GPTStoryworld\\storyworlds\\russia_to_austria_grudger.json",
+  "work_storyworld": "C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151887\\russia_to_austria_grudger.json",
+  "steps": 6,
+  "trace": [
+    {
+      "step": 0,
+      "action": "REPAIR_CONNECTED_SPOOLS",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151887\\russia_to_austria_grudger.json\nVALID: False\nERRORS: Reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild; Reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild; Reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild; Reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild; Reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild; Reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild\nSTRUCTURAL_SCORE: 0.950\nEFFECT_DIVERSITY: 0.506\nGATING_SCORE: 0.000\nENDING_DIVERSITY: 1.000\nDEAD_END_RATE: 1.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 1.0,
+        "max_ending_share": 1.0,
+        "min_ending_share": 1.0,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": false,
+      "validate_out": "Invalid: ['reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild', 'reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild', 'reaction consequence_id not found: encounter=enc_revenge_sealed option=opt_execute_revenge reaction=react_revenge_complete -> wild']\n",
+      "applied": "repair_connected_spools",
+      "post_valid": false,
+      "post_validate_out": "Invalid: ['reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild', 'reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild', 'reaction consequence_id not found: encounter=enc_revenge_sealed option=opt_execute_revenge reaction=react_revenge_complete -> wild']\n"
+    },
+    {
+      "step": 1,
+      "action": "REPAIR_CONNECTED_SPOOLS",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151887\\russia_to_austria_grudger.json\nVALID: False\nERRORS: Reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild; Reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild; Reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild; Reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild; Reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild; Reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild\nSTRUCTURAL_SCORE: 0.950\nEFFECT_DIVERSITY: 0.506\nGATING_SCORE: 0.000\nENDING_DIVERSITY: 1.000\nDEAD_END_RATE: 1.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 1.0,
+        "max_ending_share": 1.0,
+        "min_ending_share": 1.0,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": false,
+      "validate_out": "Invalid: ['reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild', 'reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild', 'reaction consequence_id not found: encounter=enc_revenge_sealed option=opt_execute_revenge reaction=react_revenge_complete -> wild']\n",
+      "applied": "repair_connected_spools",
+      "post_valid": false,
+      "post_validate_out": "Invalid: ['reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild', 'reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild', 'reaction consequence_id not found: encounter=enc_revenge_sealed option=opt_execute_revenge reaction=react_revenge_complete -> wild']\n"
+    },
+    {
+      "step": 2,
+      "action": "REPAIR_CONNECTED_SPOOLS",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151887\\russia_to_austria_grudger.json\nVALID: False\nERRORS: Reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild; Reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild; Reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild; Reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild; Reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild; Reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild\nSTRUCTURAL_SCORE: 0.950\nEFFECT_DIVERSITY: 0.506\nGATING_SCORE: 0.000\nENDING_DIVERSITY: 1.000\nDEAD_END_RATE: 1.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 1.0,
+        "max_ending_share": 1.0,
+        "min_ending_share": 1.0,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": false,
+      "validate_out": "Invalid: ['reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild', 'reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild', 'reaction consequence_id not found: encounter=enc_revenge_sealed option=opt_execute_revenge reaction=react_revenge_complete -> wild']\n",
+      "applied": "repair_connected_spools",
+      "post_valid": false,
+      "post_validate_out": "Invalid: ['reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild', 'reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild', 'reaction consequence_id not found: encounter=enc_revenge_sealed option=opt_execute_revenge reaction=react_revenge_complete -> wild']\n"
+    },
+    {
+      "step": 3,
+      "action": "REPAIR_CONNECTED_SPOOLS",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151887\\russia_to_austria_grudger.json\nVALID: False\nERRORS: Reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild; Reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild; Reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild; Reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild; Reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild; Reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild\nSTRUCTURAL_SCORE: 0.950\nEFFECT_DIVERSITY: 0.506\nGATING_SCORE: 0.000\nENDING_DIVERSITY: 1.000\nDEAD_END_RATE: 1.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 1.0,
+        "max_ending_share": 1.0,
+        "min_ending_share": 1.0,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": false,
+      "validate_out": "Invalid: ['reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild', 'reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild', 'reaction consequence_id not found: encounter=enc_revenge_sealed option=opt_execute_revenge reaction=react_revenge_complete -> wild']\n",
+      "applied": "repair_connected_spools",
+      "post_valid": false,
+      "post_validate_out": "Invalid: ['reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild', 'reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild', 'reaction consequence_id not found: encounter=enc_revenge_sealed option=opt_execute_revenge reaction=react_revenge_complete -> wild']\n"
+    },
+    {
+      "step": 4,
+      "action": "REPAIR_CONNECTED_SPOOLS",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151887\\russia_to_austria_grudger.json\nVALID: False\nERRORS: Reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild; Reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild; Reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild; Reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild; Reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild; Reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild\nSTRUCTURAL_SCORE: 0.950\nEFFECT_DIVERSITY: 0.506\nGATING_SCORE: 0.000\nENDING_DIVERSITY: 1.000\nDEAD_END_RATE: 1.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 1.0,
+        "max_ending_share": 1.0,
+        "min_ending_share": 1.0,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": false,
+      "validate_out": "Invalid: ['reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild', 'reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild', 'reaction consequence_id not found: encounter=enc_revenge_sealed option=opt_execute_revenge reaction=react_revenge_complete -> wild']\n",
+      "applied": "repair_connected_spools",
+      "post_valid": false,
+      "post_validate_out": "Invalid: ['reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild', 'reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild', 'reaction consequence_id not found: encounter=enc_revenge_sealed option=opt_execute_revenge reaction=react_revenge_complete -> wild']\n"
+    },
+    {
+      "step": 5,
+      "action": "REPAIR_CONNECTED_SPOOLS",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151887\\russia_to_austria_grudger.json\nVALID: False\nERRORS: Reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild; Reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild; Reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild; Reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild; Reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild; Reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild\nSTRUCTURAL_SCORE: 0.950\nEFFECT_DIVERSITY: 0.506\nGATING_SCORE: 0.000\nENDING_DIVERSITY: 1.000\nDEAD_END_RATE: 1.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 1.0,
+        "max_ending_share": 1.0,
+        "min_ending_share": 1.0,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": false,
+      "validate_out": "Invalid: ['reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild', 'reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild', 'reaction consequence_id not found: encounter=enc_revenge_sealed option=opt_execute_revenge reaction=react_revenge_complete -> wild']\n",
+      "applied": "repair_connected_spools",
+      "post_valid": false,
+      "post_validate_out": "Invalid: ['reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild', 'reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild', 'reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild', 'reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild', 'reaction consequence_id not found: encounter=enc_revenge_sealed option=opt_execute_revenge reaction=react_revenge_complete -> wild']\n"
+    }
+  ],
+  "final_state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151887\\russia_to_austria_grudger.json\nVALID: False\nERRORS: Reaction consequence_id not found: encounter=enc_betrayal_record option=opt_view_evidence reaction=react_evidence_shown -> wild; Reaction consequence_id not found: encounter=enc_betrayal_record option=opt_dismiss_evidence reaction=react_austria_skeptical -> wild; Reaction consequence_id not found: encounter=enc_betrayal_pattern option=opt_analyze_pattern reaction=react_pattern_clear -> wild; Reaction consequence_id not found: encounter=enc_austria_fate option=opt_project_betrayal reaction=react_austria_endangered -> wild; Reaction consequence_id not found: encounter=enc_austria_fate option=opt_turkey_different reaction=react_foolish_hope -> wild; Reaction consequence_id not found: encounter=enc_revenge_coalition option=opt_stay_neutral reaction=react_neutral_warning -> wild\nSTRUCTURAL_SCORE: 0.950\nEFFECT_DIVERSITY: 0.506\nGATING_SCORE: 0.000\nENDING_DIVERSITY: 1.000\nDEAD_END_RATE: 1.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+  "final_benchmark": {
+    "dead_end_rate": 1.0,
+    "max_ending_share": 1.0,
+    "min_ending_share": 1.0,
+    "late_block_rate": 0.0,
+    "secret_reachability": 0.0
+  },
+  "benchmark_pass": false
+}

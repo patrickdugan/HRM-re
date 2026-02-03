@@ -1,0 +1,124 @@
+{
+  "input_storyworld": "C:\\projects\\GPTStoryworld\\storyworlds\\gaza_doctor.json",
+  "work_storyworld": "C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151777\\gaza_doctor.json",
+  "steps": 6,
+  "trace": [
+    {
+      "step": 0,
+      "action": "ENDING_REACHABILITY",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151777\\gaza_doctor.json\nVALID: True\nERRORS: none\nSTRUCTURAL_SCORE: 1.000\nEFFECT_DIVERSITY: 0.502\nGATING_SCORE: 0.452\nENDING_DIVERSITY: 0.700\nDEAD_END_RATE: 0.000\nMAX_ENDING_SHARE: 0.200\nMIN_ENDING_SHARE: 0.005\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 0.0,
+        "max_ending_share": 0.2,
+        "min_ending_share": 0.005,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": true,
+      "validate_out": "VALID OK\n",
+      "applied": "ending_reachability_apply_small",
+      "post_valid": true,
+      "post_validate_out": "VALID OK\n"
+    },
+    {
+      "step": 1,
+      "action": "ENDING_REACHABILITY",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151777\\gaza_doctor.json\nVALID: True\nERRORS: none\nSTRUCTURAL_SCORE: 1.000\nEFFECT_DIVERSITY: 0.502\nGATING_SCORE: 0.452\nENDING_DIVERSITY: 0.700\nDEAD_END_RATE: 0.000\nMAX_ENDING_SHARE: 0.200\nMIN_ENDING_SHARE: 0.005\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 0.0,
+        "max_ending_share": 0.2,
+        "min_ending_share": 0.005,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": true,
+      "validate_out": "VALID OK\n",
+      "applied": "ending_reachability_apply_small",
+      "post_valid": true,
+      "post_validate_out": "VALID OK\n"
+    },
+    {
+      "step": 2,
+      "action": "ENDING_REACHABILITY",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151777\\gaza_doctor.json\nVALID: True\nERRORS: none\nSTRUCTURAL_SCORE: 1.000\nEFFECT_DIVERSITY: 0.502\nGATING_SCORE: 0.452\nENDING_DIVERSITY: 0.700\nDEAD_END_RATE: 0.000\nMAX_ENDING_SHARE: 0.200\nMIN_ENDING_SHARE: 0.005\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 0.0,
+        "max_ending_share": 0.2,
+        "min_ending_share": 0.005,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": true,
+      "validate_out": "VALID OK\n",
+      "applied": "ending_reachability_apply_small",
+      "post_valid": true,
+      "post_validate_out": "VALID OK\n"
+    },
+    {
+      "step": 3,
+      "action": "ENDING_REACHABILITY",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151777\\gaza_doctor.json\nVALID: True\nERRORS: none\nSTRUCTURAL_SCORE: 1.000\nEFFECT_DIVERSITY: 0.502\nGATING_SCORE: 0.452\nENDING_DIVERSITY: 0.700\nDEAD_END_RATE: 0.000\nMAX_ENDING_SHARE: 0.200\nMIN_ENDING_SHARE: 0.005\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 0.0,
+        "max_ending_share": 0.2,
+        "min_ending_share": 0.005,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": true,
+      "validate_out": "VALID OK\n",
+      "applied": "ending_reachability_apply_small",
+      "post_valid": true,
+      "post_validate_out": "VALID OK\n"
+    },
+    {
+      "step": 4,
+      "action": "ENDING_REACHABILITY",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151777\\gaza_doctor.json\nVALID: True\nERRORS: none\nSTRUCTURAL_SCORE: 1.000\nEFFECT_DIVERSITY: 0.502\nGATING_SCORE: 0.452\nENDING_DIVERSITY: 0.700\nDEAD_END_RATE: 0.000\nMAX_ENDING_SHARE: 0.200\nMIN_ENDING_SHARE: 0.005\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 0.0,
+        "max_ending_share": 0.2,
+        "min_ending_share": 0.005,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": true,
+      "validate_out": "VALID OK\n",
+      "applied": "ending_reachability_apply_small",
+      "post_valid": true,
+      "post_validate_out": "VALID OK\n"
+    },
+    {
+      "step": 5,
+      "action": "ENDING_REACHABILITY",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151777\\gaza_doctor.json\nVALID: True\nERRORS: none\nSTRUCTURAL_SCORE: 1.000\nEFFECT_DIVERSITY: 0.502\nGATING_SCORE: 0.452\nENDING_DIVERSITY: 0.700\nDEAD_END_RATE: 0.000\nMAX_ENDING_SHARE: 0.200\nMIN_ENDING_SHARE: 0.005\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 0.0,
+        "max_ending_share": 0.2,
+        "min_ending_share": 0.005,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": true,
+      "validate_out": "VALID OK\n",
+      "applied": "ending_reachability_apply_small",
+      "post_valid": true,
+      "post_validate_out": "VALID OK\n"
+    }
+  ],
+  "final_state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151777\\gaza_doctor.json\nVALID: True\nERRORS: none\nSTRUCTURAL_SCORE: 1.000\nEFFECT_DIVERSITY: 0.502\nGATING_SCORE: 0.452\nENDING_DIVERSITY: 0.700\nDEAD_END_RATE: 0.000\nMAX_ENDING_SHARE: 0.200\nMIN_ENDING_SHARE: 0.005\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+  "final_benchmark": {
+    "dead_end_rate": 0.0,
+    "max_ending_share": 0.2,
+    "min_ending_share": 0.005,
+    "late_block_rate": 0.0,
+    "secret_reachability": 0.0
+  },
+  "benchmark_pass": false
+}

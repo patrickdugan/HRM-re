@@ -1,0 +1,124 @@
+{
+  "input_storyworld": "C:\\projects\\GPTStoryworld\\storyworlds\\shadow_to_bio_grudger.json",
+  "work_storyworld": "C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151893\\shadow_to_bio_grudger.json",
+  "steps": 6,
+  "trace": [
+    {
+      "step": 0,
+      "action": "MATERIALIZE_SPOOLS",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151893\\shadow_to_bio_grudger.json\nVALID: False\nERRORS: spools: no starts_active spool; spools[spool_main]: encounters empty; spools[spool_endings]: encounters empty\nSTRUCTURAL_SCORE: 0.900\nEFFECT_DIVERSITY: 0.510\nGATING_SCORE: 0.250\nENDING_DIVERSITY: 0.500\nDEAD_END_RATE: 1.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 1.0,
+        "max_ending_share": 1.0,
+        "min_ending_share": 1.0,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": false,
+      "validate_out": "Invalid: ['spools: no starts_active spool', 'spools[spool_main]: encounters empty', 'spools[spool_endings]: encounters empty']\n",
+      "applied": "materialize_spools",
+      "post_valid": false,
+      "post_validate_out": "Invalid: ['spools[spool_main]: encounters empty', 'spools[spool_endings]: encounters empty']\n"
+    },
+    {
+      "step": 1,
+      "action": "SWEEPWEAVE_VALIDATE",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151893\\shadow_to_bio_grudger.json\nVALID: False\nERRORS: spools[spool_main]: encounters empty; spools[spool_endings]: encounters empty\nSTRUCTURAL_SCORE: 0.900\nEFFECT_DIVERSITY: 0.510\nGATING_SCORE: 0.250\nENDING_DIVERSITY: 0.500\nDEAD_END_RATE: 1.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 1.0,
+        "max_ending_share": 1.0,
+        "min_ending_share": 1.0,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": false,
+      "validate_out": "Invalid: ['spools[spool_main]: encounters empty', 'spools[spool_endings]: encounters empty']\n",
+      "applied": "validate",
+      "post_valid": false,
+      "post_validate_out": "Invalid: ['spools[spool_main]: encounters empty', 'spools[spool_endings]: encounters empty']\n"
+    },
+    {
+      "step": 2,
+      "action": "SWEEPWEAVE_VALIDATE",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151893\\shadow_to_bio_grudger.json\nVALID: False\nERRORS: spools[spool_main]: encounters empty; spools[spool_endings]: encounters empty\nSTRUCTURAL_SCORE: 0.900\nEFFECT_DIVERSITY: 0.510\nGATING_SCORE: 0.250\nENDING_DIVERSITY: 0.500\nDEAD_END_RATE: 1.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 1.0,
+        "max_ending_share": 1.0,
+        "min_ending_share": 1.0,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": false,
+      "validate_out": "Invalid: ['spools[spool_main]: encounters empty', 'spools[spool_endings]: encounters empty']\n",
+      "applied": "validate",
+      "post_valid": false,
+      "post_validate_out": "Invalid: ['spools[spool_main]: encounters empty', 'spools[spool_endings]: encounters empty']\n"
+    },
+    {
+      "step": 3,
+      "action": "SWEEPWEAVE_VALIDATE",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151893\\shadow_to_bio_grudger.json\nVALID: False\nERRORS: spools[spool_main]: encounters empty; spools[spool_endings]: encounters empty\nSTRUCTURAL_SCORE: 0.900\nEFFECT_DIVERSITY: 0.510\nGATING_SCORE: 0.250\nENDING_DIVERSITY: 0.500\nDEAD_END_RATE: 1.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 1.0,
+        "max_ending_share": 1.0,
+        "min_ending_share": 1.0,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": false,
+      "validate_out": "Invalid: ['spools[spool_main]: encounters empty', 'spools[spool_endings]: encounters empty']\n",
+      "applied": "validate",
+      "post_valid": false,
+      "post_validate_out": "Invalid: ['spools[spool_main]: encounters empty', 'spools[spool_endings]: encounters empty']\n"
+    },
+    {
+      "step": 4,
+      "action": "SWEEPWEAVE_VALIDATE",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151893\\shadow_to_bio_grudger.json\nVALID: False\nERRORS: spools[spool_main]: encounters empty; spools[spool_endings]: encounters empty\nSTRUCTURAL_SCORE: 0.900\nEFFECT_DIVERSITY: 0.510\nGATING_SCORE: 0.250\nENDING_DIVERSITY: 0.500\nDEAD_END_RATE: 1.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 1.0,
+        "max_ending_share": 1.0,
+        "min_ending_share": 1.0,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": false,
+      "validate_out": "Invalid: ['spools[spool_main]: encounters empty', 'spools[spool_endings]: encounters empty']\n",
+      "applied": "validate",
+      "post_valid": false,
+      "post_validate_out": "Invalid: ['spools[spool_main]: encounters empty', 'spools[spool_endings]: encounters empty']\n"
+    },
+    {
+      "step": 5,
+      "action": "SWEEPWEAVE_VALIDATE",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151893\\shadow_to_bio_grudger.json\nVALID: False\nERRORS: spools[spool_main]: encounters empty; spools[spool_endings]: encounters empty\nSTRUCTURAL_SCORE: 0.900\nEFFECT_DIVERSITY: 0.510\nGATING_SCORE: 0.250\nENDING_DIVERSITY: 0.500\nDEAD_END_RATE: 1.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 1.0,
+        "max_ending_share": 1.0,
+        "min_ending_share": 1.0,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": false,
+      "validate_out": "Invalid: ['spools[spool_main]: encounters empty', 'spools[spool_endings]: encounters empty']\n",
+      "applied": "validate",
+      "post_valid": false,
+      "post_validate_out": "Invalid: ['spools[spool_main]: encounters empty', 'spools[spool_endings]: encounters empty']\n"
+    }
+  ],
+  "final_state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151893\\shadow_to_bio_grudger.json\nVALID: False\nERRORS: spools[spool_main]: encounters empty; spools[spool_endings]: encounters empty\nSTRUCTURAL_SCORE: 0.900\nEFFECT_DIVERSITY: 0.510\nGATING_SCORE: 0.250\nENDING_DIVERSITY: 0.500\nDEAD_END_RATE: 1.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+  "final_benchmark": {
+    "dead_end_rate": 1.0,
+    "max_ending_share": 1.0,
+    "min_ending_share": 1.0,
+    "late_block_rate": 0.0,
+    "secret_reachability": 0.0
+  },
+  "benchmark_pass": false
+}

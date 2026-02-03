@@ -1,0 +1,124 @@
+{
+  "input_storyworld": "C:\\projects\\GPTStoryworld\\storyworlds\\first_and_last_men_flagship.json",
+  "work_storyworld": "C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151744\\first_and_last_men_flagship.json",
+  "steps": 6,
+  "trace": [
+    {
+      "step": 0,
+      "action": "SWEEPWEAVE_VALIDATE",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151744\\first_and_last_men_flagship.json\nVALID: False\nERRORS: Missing top-level field: modified_time\nSTRUCTURAL_SCORE: 0.969\nEFFECT_DIVERSITY: 0.501\nGATING_SCORE: 0.000\nENDING_DIVERSITY: 1.000\nDEAD_END_RATE: 0.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 0.0,
+        "max_ending_share": 1.0,
+        "min_ending_share": 1.0,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": false,
+      "validate_out": "Invalid: ['modified_time: missing']\n",
+      "applied": "validate",
+      "post_valid": false,
+      "post_validate_out": "Invalid: ['modified_time: missing']\n"
+    },
+    {
+      "step": 1,
+      "action": "SWEEPWEAVE_VALIDATE",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151744\\first_and_last_men_flagship.json\nVALID: False\nERRORS: Missing top-level field: modified_time\nSTRUCTURAL_SCORE: 0.969\nEFFECT_DIVERSITY: 0.501\nGATING_SCORE: 0.000\nENDING_DIVERSITY: 1.000\nDEAD_END_RATE: 0.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 0.0,
+        "max_ending_share": 1.0,
+        "min_ending_share": 1.0,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": false,
+      "validate_out": "Invalid: ['modified_time: missing']\n",
+      "applied": "validate",
+      "post_valid": false,
+      "post_validate_out": "Invalid: ['modified_time: missing']\n"
+    },
+    {
+      "step": 2,
+      "action": "SWEEPWEAVE_VALIDATE",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151744\\first_and_last_men_flagship.json\nVALID: False\nERRORS: Missing top-level field: modified_time\nSTRUCTURAL_SCORE: 0.969\nEFFECT_DIVERSITY: 0.501\nGATING_SCORE: 0.000\nENDING_DIVERSITY: 1.000\nDEAD_END_RATE: 0.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 0.0,
+        "max_ending_share": 1.0,
+        "min_ending_share": 1.0,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": false,
+      "validate_out": "Invalid: ['modified_time: missing']\n",
+      "applied": "validate",
+      "post_valid": false,
+      "post_validate_out": "Invalid: ['modified_time: missing']\n"
+    },
+    {
+      "step": 3,
+      "action": "SWEEPWEAVE_VALIDATE",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151744\\first_and_last_men_flagship.json\nVALID: False\nERRORS: Missing top-level field: modified_time\nSTRUCTURAL_SCORE: 0.969\nEFFECT_DIVERSITY: 0.501\nGATING_SCORE: 0.000\nENDING_DIVERSITY: 1.000\nDEAD_END_RATE: 0.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 0.0,
+        "max_ending_share": 1.0,
+        "min_ending_share": 1.0,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": false,
+      "validate_out": "Invalid: ['modified_time: missing']\n",
+      "applied": "validate",
+      "post_valid": false,
+      "post_validate_out": "Invalid: ['modified_time: missing']\n"
+    },
+    {
+      "step": 4,
+      "action": "SWEEPWEAVE_VALIDATE",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151744\\first_and_last_men_flagship.json\nVALID: False\nERRORS: Missing top-level field: modified_time\nSTRUCTURAL_SCORE: 0.969\nEFFECT_DIVERSITY: 0.501\nGATING_SCORE: 0.000\nENDING_DIVERSITY: 1.000\nDEAD_END_RATE: 0.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 0.0,
+        "max_ending_share": 1.0,
+        "min_ending_share": 1.0,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": false,
+      "validate_out": "Invalid: ['modified_time: missing']\n",
+      "applied": "validate",
+      "post_valid": false,
+      "post_validate_out": "Invalid: ['modified_time: missing']\n"
+    },
+    {
+      "step": 5,
+      "action": "SWEEPWEAVE_VALIDATE",
+      "state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151744\\first_and_last_men_flagship.json\nVALID: False\nERRORS: Missing top-level field: modified_time\nSTRUCTURAL_SCORE: 0.969\nEFFECT_DIVERSITY: 0.501\nGATING_SCORE: 0.000\nENDING_DIVERSITY: 1.000\nDEAD_END_RATE: 0.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+      "benchmark": {
+        "dead_end_rate": 0.0,
+        "max_ending_share": 1.0,
+        "min_ending_share": 1.0,
+        "late_block_rate": 0.0,
+        "secret_reachability": 0.0
+      },
+      "benchmark_pass": false,
+      "valid": false,
+      "validate_out": "Invalid: ['modified_time: missing']\n",
+      "applied": "validate",
+      "post_valid": false,
+      "post_validate_out": "Invalid: ['modified_time: missing']\n"
+    }
+  ],
+  "final_state": "PATH: C:\\projects\\HRM-re\\experiments\\storyworld_conductor_hrm\\reports\\batch\\run_1770151744\\first_and_last_men_flagship.json\nVALID: False\nERRORS: Missing top-level field: modified_time\nSTRUCTURAL_SCORE: 0.969\nEFFECT_DIVERSITY: 0.501\nGATING_SCORE: 0.000\nENDING_DIVERSITY: 1.000\nDEAD_END_RATE: 0.000\nMAX_ENDING_SHARE: 1.000\nMIN_ENDING_SHARE: 1.000\nLATE_BLOCK_RATE: 0.000\nSECRET_REACHABILITY: 0.000\n",
+  "final_benchmark": {
+    "dead_end_rate": 0.0,
+    "max_ending_share": 1.0,
+    "min_ending_share": 1.0,
+    "late_block_rate": 0.0,
+    "secret_reachability": 0.0
+  },
+  "benchmark_pass": false
+}

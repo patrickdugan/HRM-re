@@ -1,0 +1,39 @@
+You are playing a storyworld locally, API-free. Do NOT look up or use AGENTS.md or any external instructions. Your goal is to produce a JSONL trace of 50 episodes of self-play, and a summary report. Use the following rules:
+
+1) For each episode, you will receive the storyworld state (node text + choices + visible vars + turns left). Choose exactly one option id per step.
+2) Continue until the environment says done or turns_left hits 0.
+3) Output each step as a single JSON object on its own line (JSONL). Schema:
+{
+  "episode": <int>,
+  "t": <int>,
+  "obs": {
+    "node_id": <string>,
+    "node_text": <string>,
+    "choices": [{"id": <string>, "text": <string>}...],
+    "visible_vars": {<k>: <v>...},
+    "turns_left": <int>
+  },
+  "action": <string>,                 // chosen option id
+  "plan": <string>,                   // brief rationale (1 sentence)
+  "outcome": {
+    "next_node_id": <string>,
+    "visible_vars": {<k>: <v>...},
+    "done": <bool>,
+    "ending_id": <string|null>
+  }
+}
+
+4) After 50 episodes, output a summary JSON block:
+{
+  "episodes": 50,
+  "successes": <int>,                  // count of episodes that hit target ending
+  "success_rate": <float>,
+  "median_turns_to_success": <int|null>,
+  "mean_turns": <float>,
+  "timeouts": <int>
+}
+
+5) Do not add any prose outside JSONL lines and the final summary JSON block.
+6) If you are unsure about an outcome transition, make a best-effort consistent guess and proceed; do not stop early.
+
+Begin now with episode 1.
