@@ -2,7 +2,7 @@ import importlib.util
 import json
 import os
 from dataclasses import dataclass
-from typing import List
+from typing import Dict, List
 
 
 STORYWORLD_ENV_PATH = r"C:\projects\GPTStoryworld\storyworld-env\__init__.py"
