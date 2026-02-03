@@ -22,6 +22,7 @@ def main():
 
     tools = [
         "SWEEPWEAVE_VALIDATE",
+        "SCHEMA_PATCH",
         "MATERIALIZE_SPOOLS",
         "REPAIR_CONNECTED_SPOOLS",
         "TUNE_ENDING_GATES",

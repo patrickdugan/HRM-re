@@ -112,6 +112,8 @@ def summarize_state(m: StoryworldMetrics) -> str:
 def suggest_action(m: StoryworldMetrics) -> str:
     errors = " ".join(m.errors).lower()
     if not m.valid:
+        if "pronoun" in errors or "depth" in errors:
+            return "SCHEMA_PATCH"
         if "spools" in errors and "starts_active" in errors:
             return "MATERIALIZE_SPOOLS"
         if "consequence_id" in errors:

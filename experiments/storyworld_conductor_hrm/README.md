@@ -48,6 +48,7 @@ python .\benchmark_harness.py --storyworld "C:\projects\GPTStoryworld\storyworld
 ```
 
 Action mapping (generic defaults):
+- `SCHEMA_PATCH` -> fill missing `pronoun` and `depth` defaults
 - `MATERIALIZE_SPOOLS` -> materialize missing Age spools
 - `REPAIR_CONNECTED_SPOOLS` -> fix `connected_spools` by Age title
 - `TUNE_ENDING_GATES` -> apply small desirability bias to endings

@@ -42,6 +42,23 @@ def _load_storyworld(path: str) -> Dict:
         return json.load(f)
 
 
+def _schema_patch(path: str) -> bool:
+    data = _load_storyworld(path)
+    changed = False
+    for char in data.get("characters", []):
+        if "pronoun" not in char:
+            char["pronoun"] = "they"
+            changed = True
+    for prop in data.get("authored_properties", []):
+        if "depth" not in prop:
+            prop["depth"] = 0
+            changed = True
+    if changed:
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+    return changed
+
+
 def _pick_first_ids(path: str) -> Tuple[Optional[str], Optional[str], Optional[int]]:
     data = _load_storyworld(path)
     for enc in data.get("encounters", []):
@@ -60,6 +77,9 @@ def _pick_first_ids(path: str) -> Tuple[Optional[str], Optional[str], Optional[i
 def _apply_action(path: str, action: str) -> str:
     if action == "SWEEPWEAVE_VALIDATE":
         return "validate"
+    if action == "SCHEMA_PATCH":
+        changed = _schema_patch(path)
+        return "schema_patch" if changed else "schema_patch_noop"
     if action == "MATERIALIZE_SPOOLS":
         tmp = path + ".tmp"
         _run(["python", MATERIALIZE, path, tmp])
@@ -150,6 +170,7 @@ def main():
 
     tools = [
         "SWEEPWEAVE_VALIDATE",
+        "SCHEMA_PATCH",
         "MATERIALIZE_SPOOLS",
         "REPAIR_CONNECTED_SPOOLS",
         "TUNE_ENDING_GATES",
