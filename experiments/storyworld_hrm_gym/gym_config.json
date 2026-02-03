@@ -26,7 +26,7 @@
   },
   "codex_exec": {
     "enabled": false,
-    "command": "codex",
+    "command": "C:/projects/node_modules/@openai/codex/vendor/x86_64-pc-windows-msvc/codex/codex.exe",
     "mode": "",
     "sandbox": "",
     "timeout_seconds": 900,
