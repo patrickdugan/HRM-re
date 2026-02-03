@@ -1,0 +1,48 @@
+{
+  "run_id": "gym-2026-02-03-001",
+  "seed": 7,
+  "recursion_caps": {
+    "max_cycles": 2,
+    "max_nested_depth": 1
+  },
+  "budgets": {
+    "storyworld_gen": {"ram_mb": 1024, "cpu_pct": 25, "minutes": 10},
+    "train_player": {"ram_mb": 2048, "cpu_pct": 50, "minutes": 30},
+    "eval": {"ram_mb": 1024, "cpu_pct": 25, "minutes": 10}
+  },
+  "paths": {
+    "root": "outputs/gym-2026-02-03-001",
+    "storyworld_dir": "storyworld",
+    "dataset_dir": "datasets",
+    "model_dir": "models",
+    "report_dir": "reports"
+  },
+  "storyworld": {
+    "max_nodes": 120,
+    "max_choices_per_node": 4,
+    "prompt_file": "prompts/storyworld_prompt.txt",
+    "output_world": "world.json",
+    "output_encounters": "encounters.jsonl"
+  },
+  "wait_for_artifacts": false,
+  "wait_timeout_seconds": 900,
+  "wait_poll_seconds": 10,
+  "dataset": {
+    "train_output": "player_train.jsonl",
+    "eval_output": "player_eval.jsonl",
+    "eval_holdout_ratio": 0.2
+  },
+  "train": {
+    "type": "storyworld",
+    "config_path": "../hrm_trainer_template/trainer_config.json"
+  },
+  "eval_config": {
+    "batch_size": 16,
+    "device": "cpu"
+  },
+  "mlflow": {
+    "enabled": false,
+    "tracking_uri": "",
+    "experiment": "storyworld_hrm_gym"
+  }
+}

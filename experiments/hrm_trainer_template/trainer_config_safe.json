@@ -1,0 +1,31 @@
+{
+  "run_id": "hrm-template-safe-001",
+  "max_ram_mb": 1024,
+  "max_cpu_pct": 25,
+  "max_io_mb_s": 20,
+  "chunk_strategy": "fixed",
+  "chunk_size": 512,
+  "checkpoint_every_steps": 50,
+  "checkpoint_every_seconds": 60,
+  "max_steps": 200,
+  "max_runtime_seconds": 300,
+  "output_dir": "outputs",
+  "dry_run": true,
+  "simulate_abort_at_step": null,
+  "train": {
+    "type": "conductor",
+    "data": "../storyworld_conductor_hrm/data_conductor.jsonl",
+    "out": "outputs/hrm-template-safe-001/model.pt",
+    "epochs": 1,
+    "batch_size": 8,
+    "lr": 0.0002,
+    "seed": 7,
+    "dim": 64,
+    "depth": 2,
+    "heads": 2,
+    "max_examples": 100,
+    "device": "cpu",
+    "resume_checkpoint": "",
+    "resume_latest": false
+  }
+}

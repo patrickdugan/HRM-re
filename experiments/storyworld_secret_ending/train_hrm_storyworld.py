@@ -3,10 +3,17 @@ import json
 import os
 import random
 import sys
+import time
 from dataclasses import dataclass
+from datetime import datetime, timezone
 
 import torch
 from torch.utils.data import Dataset, DataLoader
+
+try:
+    import psutil  # type: ignore
+except Exception:
+    psutil = None
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if ROOT_DIR not in sys.path:
@@ -101,6 +108,62 @@ def collate_batch(batch, pad_id, act_id):
     return torch.tensor(input_ids, dtype=torch.long), torch.tensor(labels, dtype=torch.long)
 
 
+def utc_now():
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def append_jsonl(path, obj):
+    if not path:
+        return
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(obj) + "\n")
+
+
+def write_json(path, obj):
+    if not path:
+        return
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(obj, f, indent=2)
+
+
+class IOMonitor:
+    def __init__(self, max_mb_s):
+        self.max_mb_s = max_mb_s
+        self.proc = psutil.Process() if psutil else None
+        self.last_ts = None
+        self.last_bytes = None
+
+    def sample(self):
+        if not self.proc or not self.max_mb_s or self.max_mb_s <= 0:
+            return None, False
+        now = time.time()
+        counters = self.proc.io_counters()
+        total_bytes = counters.read_bytes + counters.write_bytes
+        if self.last_ts is None:
+            self.last_ts = now
+            self.last_bytes = total_bytes
+            return 0.0, False
+        dt = max(1e-6, now - self.last_ts)
+        delta = total_bytes - self.last_bytes
+        rate_mb_s = (delta / dt) / (1024 * 1024)
+        self.last_ts = now
+        self.last_bytes = total_bytes
+        return rate_mb_s, rate_mb_s > self.max_mb_s
+
+
+def save_checkpoint(path, model, optimizer, vocab, config, step, epoch):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    payload = {
+        "vocab": vocab,
+        "config": config,
+        "state_dict": model.state_dict(),
+        "optimizer": optimizer.state_dict(),
+        "step": step,
+        "epoch": epoch,
+    }
+    torch.save(payload, path)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", required=True)
@@ -115,6 +178,16 @@ def main():
     parser.add_argument("--max_examples", type=int, default=0)
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--init_model", default=None)
+    parser.add_argument("--checkpoint_dir", default="")
+    parser.add_argument("--checkpoint_every_steps", type=int, default=0)
+    parser.add_argument("--checkpoint_every_seconds", type=int, default=0)
+    parser.add_argument("--max_steps", type=int, default=0)
+    parser.add_argument("--max_runtime_seconds", type=int, default=0)
+    parser.add_argument("--io_mb_s", type=float, default=0.0)
+    parser.add_argument("--log_jsonl", default="")
+    parser.add_argument("--summary_json", default="")
+    parser.add_argument("--resume_checkpoint", default="")
+    parser.add_argument("--resume_latest", action="store_true")
     args = parser.parse_args()
 
     random.seed(args.seed)
@@ -124,8 +197,27 @@ def main():
     if args.max_examples and args.max_examples > 0:
         examples = examples[: args.max_examples]
 
+    if args.resume_latest and args.checkpoint_dir and os.path.isdir(args.checkpoint_dir):
+        candidates = []
+        for name in os.listdir(args.checkpoint_dir):
+            if name.startswith("step-") and name.endswith(".pt"):
+                parts = name.replace("step-", "").replace(".pt", "")
+                try:
+                    step = int(parts)
+                    candidates.append((step, name))
+                except ValueError:
+                    continue
+        if candidates:
+            candidates.sort()
+            latest = candidates[-1][1]
+            args.resume_checkpoint = os.path.join(args.checkpoint_dir, latest)
+
     payload = None
-    if args.init_model:
+    if args.resume_checkpoint:
+        payload = torch.load(args.resume_checkpoint, map_location=args.device)
+        vocab = payload["vocab"]
+        examples = filter_examples_for_vocab(examples, vocab)
+    elif args.init_model:
         payload = torch.load(args.init_model, map_location=args.device)
         vocab = payload["vocab"]
         examples = filter_examples_for_vocab(examples, vocab)
@@ -175,9 +267,53 @@ def main():
         ).to(args.device)
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr)
+    resume_step = 0
+    resume_epoch = 0
+
+    if args.resume_checkpoint and payload:
+        if "optimizer" in payload:
+            optimizer.load_state_dict(payload["optimizer"])
+        resume_step = int(payload.get("step") or 0)
+        resume_epoch = int(payload.get("epoch") or 0)
+        append_jsonl(
+            args.log_jsonl,
+            {
+                "ts": utc_now(),
+                "event": "resume",
+                "checkpoint": args.resume_checkpoint,
+                "step": payload.get("step"),
+                "epoch": payload.get("epoch"),
+            },
+        )
 
     model.train()
-    for epoch in range(args.epochs):
+    start = time.time()
+    last_ckpt = start
+    steps_completed = resume_step
+    abort_reason = None
+    io_monitor = IOMonitor(args.io_mb_s)
+
+    append_jsonl(
+        args.log_jsonl,
+        {
+            "ts": utc_now(),
+            "event": "start",
+            "data": args.data,
+            "out": args.out,
+            "caps": {"io_mb_s": args.io_mb_s},
+        },
+    )
+    if args.io_mb_s and psutil is None:
+        append_jsonl(
+            args.log_jsonl,
+            {
+                "ts": utc_now(),
+                "event": "io_monitor_unavailable",
+                "reason": "psutil_not_installed",
+            },
+        )
+
+    for epoch in range(resume_epoch, args.epochs):
         total_loss = 0.0
         for batch_inputs, batch_labels in loader:
             batch_inputs = batch_inputs.to(args.device)
@@ -187,6 +323,62 @@ def main():
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
+            steps_completed += 1
+
+            now = time.time()
+            if args.max_steps and steps_completed >= args.max_steps:
+                abort_reason = "max_steps"
+                break
+            if args.max_runtime_seconds and (now - start) >= args.max_runtime_seconds:
+                abort_reason = "timeout"
+                break
+
+            rate_mb_s, over = io_monitor.sample()
+            if rate_mb_s is not None:
+                append_jsonl(
+                    args.log_jsonl,
+                    {
+                        "ts": utc_now(),
+                        "event": "io_sample",
+                        "step": steps_completed,
+                        "io_mb_s": round(rate_mb_s, 3),
+                    },
+                )
+                if over:
+                    abort_reason = "io_cap_exceeded"
+                    break
+
+            do_ckpt_step = args.checkpoint_every_steps and steps_completed % args.checkpoint_every_steps == 0
+            do_ckpt_time = args.checkpoint_every_seconds and (now - last_ckpt) >= args.checkpoint_every_seconds
+            if args.checkpoint_dir and (do_ckpt_step or do_ckpt_time):
+                ckpt_path = os.path.join(args.checkpoint_dir, f"step-{steps_completed}.pt")
+                save_checkpoint(
+                    ckpt_path,
+                    model,
+                    optimizer,
+                    vocab,
+                    {
+                        "dim": model_dim,
+                        "networks": networks,
+                        "reasoning_steps": 2,
+                        "relative_period": 2,
+                    },
+                    steps_completed,
+                    epoch,
+                )
+                append_jsonl(
+                    args.log_jsonl,
+                    {
+                        "ts": utc_now(),
+                        "event": "checkpoint",
+                        "step": steps_completed,
+                        "path": ckpt_path,
+                    },
+                )
+                last_ckpt = now
+
+        if abort_reason:
+            break
         avg_loss = total_loss / max(1, len(loader))
         print(f"epoch={epoch} loss={avg_loss:.4f}")
 
@@ -200,7 +392,32 @@ def main():
         },
         "state_dict": model.state_dict(),
     }
-    torch.save(payload, args.out)
+    if not abort_reason:
+        torch.save(payload, args.out)
+
+    status = "aborted" if abort_reason else "completed"
+    append_jsonl(
+        args.log_jsonl,
+        {
+            "ts": utc_now(),
+            "event": "end",
+            "status": status,
+            "abort_reason": abort_reason,
+            "steps_completed": steps_completed,
+        },
+    )
+    write_json(
+        args.summary_json,
+        {
+            "status": status,
+            "abort_reason": abort_reason,
+            "steps_completed": steps_completed,
+            "wall_seconds": round(time.time() - start, 3),
+        },
+    )
+
+    if abort_reason:
+        sys.exit(2)
 
 
 if __name__ == "__main__":
