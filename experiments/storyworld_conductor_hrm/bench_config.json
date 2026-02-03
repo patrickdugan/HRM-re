@@ -1,0 +1,23 @@
+{
+  "storyworld_dir": "C:\\projects\\GPTStoryworld\\storyworlds",
+  "subset": [
+    "mihna_constitutional_alignment.json",
+    "ottoman_qadi.json",
+    "gaza_doctor.json",
+    "first_and_last_men_complete.json"
+  ],
+  "builder": {
+    "steps": 12,
+    "mc_runs": 200,
+    "targets": {
+      "encounters": 45,
+      "avg_options": 3.2,
+      "avg_reactions": 2.5,
+      "avg_effects": 3.5
+    }
+  },
+  "player": {
+    "episodes": 100,
+    "max_turns": 25
+  }
+}

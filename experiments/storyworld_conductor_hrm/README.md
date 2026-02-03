@@ -61,6 +61,13 @@ python .\player_harness.py --storyworld "C:\projects\GPTStoryworld\storyworlds\m
 python .\run_full_bench.py --out .\reports\full_index.json --steps 6 --mc_runs 200 --episodes 30 --max_turns 25
 ```
 
+## Player HRM dataset + training
+
+```powershell
+python .\make_player_dataset.py --storyworld_dir "C:\projects\GPTStoryworld\storyworlds" --episodes_per_storyworld 100 --out .\data_player.jsonl
+python ..\storyworld_secret_ending\train_hrm_storyworld.py --data .\data_player.jsonl --out .\models_player.pt --epochs 3 --batch_size 8 --lr 2e-4 --dim 64 --depth 1 --heads 1
+```
+
 Action mapping (generic defaults):
 - `SCHEMA_PATCH` -> fill missing `pronoun` and `depth` defaults
 - `MATERIALIZE_SPOOLS` -> materialize missing Age spools

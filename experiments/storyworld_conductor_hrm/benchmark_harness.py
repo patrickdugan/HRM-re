@@ -10,6 +10,7 @@ from typing import Dict, List, Optional, Tuple
 import torch
 
 from conductor_env import analyze_storyworld, benchmark_metrics, benchmark_pass, summarize_state, suggest_action
+from storyworld_stats import compute_storyworld_stats
 
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -109,6 +110,21 @@ def _apply_action(path: str, action: str) -> str:
     if action == "SPOOL_SEQUENCING":
         _run(["python", SPOOL_SEQ, path])
         return "spool_sequencing"
+    if action == "NEW_ENCOUNTER":
+        _run(["python", os.path.join(SKILL_SCRIPTS_DIR, "new_encounter.py"), path])
+        return "new_encounter"
+    if action == "ADD_OPTIONS":
+        _run(["python", os.path.join(SKILL_SCRIPTS_DIR, "add_options.py"), path])
+        return "add_options"
+    if action == "ADD_REACTIONS":
+        _run(["python", os.path.join(SKILL_SCRIPTS_DIR, "add_reactions.py"), path])
+        return "add_reactions"
+    if action == "CODEX_PROMPT":
+        prompt_path = path + ".codex_prompt.txt"
+        with open(prompt_path, "w", encoding="utf-8") as f:
+            f.write("Codex: expand narrative content and ensure SweepWeave schema correctness.\\n")
+            f.write("Target: 40-50 encounters; avg options 3.2; avg reactions 2.5; avg effects 3.5.\\n")
+        return f"codex_prompt:{prompt_path}"
     return "noop"
 
 
@@ -160,6 +176,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--storyworld", required=True)
     parser.add_argument("--steps", type=int, default=6)
+    parser.add_argument("--target_encounters", type=int, default=45)
+    parser.add_argument("--target_avg_options", type=float, default=3.2)
+    parser.add_argument("--target_avg_reactions", type=float, default=2.5)
+    parser.add_argument("--target_avg_effects", type=float, default=3.5)
     parser.add_argument("--mc_runs", type=int, default=200)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--workdir", default=None)
@@ -178,6 +198,10 @@ def main():
         "ADD_SECRET_LOGIC",
         "ADD_EFFECTS",
         "SPOOL_SEQUENCING",
+        "NEW_ENCOUNTER",
+        "ADD_OPTIONS",
+        "ADD_REACTIONS",
+        "CODEX_PROMPT",
         "FINALIZE",
     ]
 
@@ -195,9 +219,22 @@ def main():
 
     for step in range(args.steps):
         metrics = analyze_storyworld(work_path, mc_runs=args.mc_runs, seed=args.seed)
-        state_text = summarize_state(metrics)
+        stats = compute_storyworld_stats(work_path)
+        state_text = summarize_state(metrics) + (
+            f"ENCOUNTERS: {stats['encounters']}\\n"
+            f"AVG_OPTIONS: {stats['avg_options']:.2f}\\n"
+            f"AVG_REACTIONS: {stats['avg_reactions']:.2f}\\n"
+            f"AVG_EFFECTS: {stats['avg_effects']:.2f}\\n"
+        )
         bench = benchmark_metrics(work_path, mc_runs=args.mc_runs, seed=args.seed)
         bench_ok = benchmark_pass(work_path, mc_runs=args.mc_runs, seed=args.seed)
+        stats = compute_storyworld_stats(work_path)
+        target_ok = (
+            stats["encounters"] >= args.target_encounters
+            and stats["avg_options"] >= args.target_avg_options
+            and stats["avg_reactions"] >= args.target_avg_reactions
+            and stats["avg_effects"] >= args.target_avg_effects
+        )
         valid, validate_out = _validate(work_path)
 
         if model is not None:
@@ -205,13 +242,14 @@ def main():
         else:
             action = suggest_action(metrics)
 
-        if action == "FINALIZE" or bench_ok:
+        if action == "FINALIZE" or (bench_ok and target_ok):
             trace.append({
                 "step": step,
                 "action": action,
                 "state": state_text,
                 "benchmark": bench,
                 "benchmark_pass": bench_ok,
+                "target_pass": target_ok,
                 "valid": valid,
                 "validate_out": validate_out,
                 "applied": "finalize" if action == "FINALIZE" else "benchmark_pass",
@@ -227,6 +265,7 @@ def main():
             "state": state_text,
             "benchmark": bench,
             "benchmark_pass": bench_ok,
+            "target_pass": target_ok,
             "valid": valid,
             "validate_out": validate_out,
             "applied": applied,
@@ -235,6 +274,7 @@ def main():
         })
 
     final_metrics = analyze_storyworld(work_path, mc_runs=args.mc_runs, seed=args.seed)
+    final_stats = compute_storyworld_stats(work_path)
     final_bench = benchmark_metrics(work_path, mc_runs=args.mc_runs, seed=args.seed)
     final_pass = benchmark_pass(work_path, mc_runs=args.mc_runs, seed=args.seed)
     report = {
@@ -243,6 +283,7 @@ def main():
         "steps": len(trace),
         "trace": trace,
         "final_state": summarize_state(final_metrics),
+        "final_stats": final_stats,
         "final_benchmark": final_bench,
         "benchmark_pass": final_pass,
     }
