@@ -3,7 +3,7 @@ import json
 import os
 import shutil
 import subprocess
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def read_json(path):
@@ -51,6 +51,7 @@ def main():
     max_attempts = int(cfg.get("max_attempts", 0))
     max_size_bytes = int(cfg.get("max_size_bytes", 0))
     end_time_local = cfg.get("end_time_local")
+    progress_interval_minutes = int(cfg.get("progress_interval_minutes", 30))
     start_index = int(cfg.get("start_index", 1))
     codex_enabled = bool(cfg.get("codex_enabled", True))
     wait_for_artifacts = bool(cfg.get("wait_for_artifacts", True))
@@ -73,6 +74,23 @@ def main():
     end_time = None
     if end_time_local:
         end_time = datetime.fromisoformat(end_time_local)
+    next_report = datetime.now() + timedelta(minutes=progress_interval_minutes)
+
+    def write_progress(final=False):
+        percent = round((verified_count / target_verified) * 100, 2) if target_verified else 0.0
+        payload = {
+            "timestamp": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+            "verified": verified_count,
+            "target": target_verified,
+            "percent": percent,
+            "attempts": attempts,
+            "max_attempts": max_attempts,
+            "end_time_local": end_time_local,
+            "final": final,
+        }
+        write_json(os.path.join(logs_dir, "progress.json"), payload)
+        with open(os.path.join(logs_dir, "progress.txt"), "w", encoding="utf-8") as f:
+            f.write(json.dumps(payload, indent=2))
 
     while verified_count < target_verified:
         if max_attempts and attempts >= max_attempts:
@@ -114,6 +132,9 @@ def main():
 
         attempts += 1
         idx += 1
+        if datetime.now() >= next_report:
+            write_progress(final=False)
+            next_report = datetime.now() + timedelta(minutes=progress_interval_minutes)
 
     summary_path = os.path.join(base_dir, "batch_summary.json")
     write_json(
@@ -128,6 +149,7 @@ def main():
             "max_size_bytes": max_size_bytes,
         },
     )
+    write_progress(final=True)
 
 
 if __name__ == "__main__":
