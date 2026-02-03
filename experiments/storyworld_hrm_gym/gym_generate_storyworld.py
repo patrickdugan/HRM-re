@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import subprocess
+import shutil
 import time
 import sys
 from datetime import datetime, timezone
@@ -93,7 +94,24 @@ Output files:
         if output_last:
             ensure_dir(os.path.dirname(output_last))
 
-        cmd = ["codex", "exec"]
+        codex_cmd = codex_cfg.get("command", "codex")
+        resolved = shutil.which(codex_cmd)
+        if not resolved:
+            manifest_path = os.path.join(run_root, "run_manifest.json")
+            manifest = {}
+            if os.path.exists(manifest_path):
+                manifest = read_json(manifest_path)
+            manifest["codex_exec"] = {
+                "enabled": True,
+                "status": "aborted",
+                "abort_reason": "codex_not_found",
+                "command": codex_cmd,
+            }
+            write_json(manifest_path, manifest)
+            print(f"Codex executable not found: {codex_cmd}")
+            return
+
+        cmd = [resolved, "exec"]
         if mode:
             cmd.append(f"--{mode}")
         if sandbox:

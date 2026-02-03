@@ -26,6 +26,7 @@
   },
   "codex_exec": {
     "enabled": false,
+    "command": "codex",
     "mode": "",
     "sandbox": "",
     "timeout_seconds": 900,

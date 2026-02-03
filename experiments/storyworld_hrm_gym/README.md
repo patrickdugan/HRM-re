@@ -52,6 +52,7 @@ Example:
 ```json
 "codex_exec": {
   "enabled": true,
+  "command": "codex",
   "mode": "full-auto",
   "sandbox": "danger-full-access",
   "timeout_seconds": 900,
