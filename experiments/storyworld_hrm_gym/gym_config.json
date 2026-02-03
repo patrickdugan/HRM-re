@@ -28,8 +28,12 @@
     "enabled": false,
     "mode": "",
     "sandbox": "",
+    "timeout_seconds": 900,
     "output_last_message": "prompts/codex_last_message.txt",
     "working_dir": ""
+  },
+  "verifier": {
+    "enabled": true
   },
   "wait_for_artifacts": false,
   "wait_timeout_seconds": 900,

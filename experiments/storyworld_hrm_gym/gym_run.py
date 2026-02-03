@@ -91,6 +91,23 @@ def main():
             print("Artifacts not found yet. Run the storyworld builder and re-run gym_run.py.")
             return
 
+    if cfg.get("verifier", {}).get("enabled", True):
+        verify_cmd = ["python", os.path.join(config_dir, "gym_verify_storyworld.py"), "--config", args.config]
+        print("Running:", " ".join(verify_cmd))
+        verify_proc = subprocess.run(verify_cmd, capture_output=True, text=True)
+        if verify_proc.returncode != 0:
+            print("Verifier failed:", verify_proc.stdout.strip())
+            manifest_path = os.path.join(run_root, "run_manifest.json")
+            manifest = read_json(manifest_path)
+            manifest["verifier"] = {"status": "failed", "details": verify_proc.stdout.strip()}
+            write_json(manifest_path, manifest)
+            return
+        else:
+            manifest_path = os.path.join(run_root, "run_manifest.json")
+            manifest = read_json(manifest_path)
+            manifest["verifier"] = {"status": "verified", "details": verify_proc.stdout.strip()}
+            write_json(manifest_path, manifest)
+
     run(["python", os.path.join(config_dir, "gym_make_dataset.py"), "--config", args.config])
     run(["python", os.path.join(config_dir, "gym_train_player.py"), "--config", args.config])
     run(["python", os.path.join(config_dir, "gym_eval.py"), "--config", args.config])

@@ -1,9 +1,8 @@
 # Storyworld HRM Gym (Scripts)
 
 This folder contains a minimal, staged pipeline for the storyworld HRM gym.
-It does not call Codex directly. Instead, it writes a prompt file that
-explicitly references the `storyworld-building` skill and expects you to run
-that skill to produce the artifacts.
+It writes a prompt file that explicitly references the `storyworld-building`
+skill. You can run that skill manually, or enable the optional Codex CLI hook.
 
 ## Stages
 
@@ -27,12 +26,14 @@ that skill to produce the artifacts.
 
 Edit `gym_config.json`. Paths are relative to the config file unless absolute.
 If you want the runner to wait for artifacts, set `wait_for_artifacts: true`.
+Verifier is enabled by default; it blocks training until artifacts are validated.
 
 ## Optional Codex CLI hook
 
 If you have the official `codex` CLI authenticated, you can enable automatic
 execution by setting `codex_exec.enabled: true` and providing the appropriate
 flags. The prompt will still reference the `storyworld-building` skill.
+The wrapper enforces a wall-clock timeout and classifies timeouts as aborted.
 
 Example:
 
@@ -41,6 +42,7 @@ Example:
   "enabled": true,
   "mode": "full-auto",
   "sandbox": "danger-full-access",
+  "timeout_seconds": 900,
   "output_last_message": "prompts/codex_last_message.txt",
   "working_dir": ""
 }

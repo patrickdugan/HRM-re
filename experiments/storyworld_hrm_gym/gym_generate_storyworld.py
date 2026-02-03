@@ -32,9 +32,16 @@ def resolve_path(root, path):
     return os.path.normpath(os.path.join(root, path))
 
 
-def run(cmd, cwd=None):
+def run_with_timeout(cmd, cwd=None, timeout_seconds=None):
     print("Running:", " ".join(cmd))
-    subprocess.check_call(cmd, cwd=cwd)
+    proc = subprocess.Popen(cmd, cwd=cwd)
+    try:
+        proc.wait(timeout=timeout_seconds)
+        return proc.returncode, None
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        proc.wait()
+        return None, "codex_timeout"
 
 
 def main():
@@ -76,9 +83,11 @@ Output files:
         f.write(prompt + "\n")
 
     codex_cfg = cfg.get("codex_exec", {})
+    output_last = ""
     if codex_cfg.get("enabled", False):
         mode = codex_cfg.get("mode", "").strip()
         sandbox = codex_cfg.get("sandbox", "").strip()
+        timeout_seconds = codex_cfg.get("timeout_seconds")
         output_last = resolve_path(run_root, codex_cfg.get("output_last_message", ""))
         if output_last:
             ensure_dir(os.path.dirname(output_last))
@@ -94,7 +103,24 @@ Output files:
 
         working_dir = codex_cfg.get("working_dir", "").strip()
         cwd = resolve_path(config_dir, working_dir) if working_dir else None
-        run(cmd, cwd=cwd)
+        returncode, abort_reason = run_with_timeout(cmd, cwd=cwd, timeout_seconds=timeout_seconds)
+        codex_result = {
+            "enabled": True,
+            "command": cmd,
+            "returncode": returncode,
+            "abort_reason": abort_reason,
+            "output_last_message": output_last,
+        }
+        if abort_reason == "codex_timeout":
+            codex_result["status"] = "aborted"
+            manifest_path = os.path.join(run_root, "run_manifest.json")
+            manifest = {}
+            if os.path.exists(manifest_path):
+                manifest = read_json(manifest_path)
+            manifest["codex_exec"] = codex_result
+            write_json(manifest_path, manifest)
+            print("Codex exec timed out; aborting safely.")
+            return
 
     manifest_path = os.path.join(run_root, "run_manifest.json")
     manifest = {
@@ -109,6 +135,12 @@ Output files:
             "encounters": encounters_path,
         },
     }
+    if codex_cfg.get("enabled", False):
+        manifest["codex_exec"] = {
+            "enabled": True,
+            "output_last_message": output_last,
+            "status": "completed",
+        }
     write_json(manifest_path, manifest)
 
     print(f"Wrote prompt: {prompt_path}")
