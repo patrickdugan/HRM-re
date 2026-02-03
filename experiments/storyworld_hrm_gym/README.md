@@ -34,6 +34,7 @@ If you have the official `codex` CLI authenticated, you can enable automatic
 execution by setting `codex_exec.enabled: true` and providing the appropriate
 flags. The prompt will still reference the `storyworld-building` skill.
 The wrapper enforces a wall-clock timeout and classifies timeouts as aborted.
+Artifacts are verified before training.
 
 Example:
 

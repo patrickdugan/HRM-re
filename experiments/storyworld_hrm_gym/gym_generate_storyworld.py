@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import subprocess
+import time
 import sys
 from datetime import datetime, timezone
 
@@ -103,15 +104,32 @@ Output files:
 
         working_dir = codex_cfg.get("working_dir", "").strip()
         cwd = resolve_path(config_dir, working_dir) if working_dir else None
-        returncode, abort_reason = run_with_timeout(cmd, cwd=cwd, timeout_seconds=timeout_seconds)
+        max_retries = int(codex_cfg.get("max_retries", 0))
+        backoff_seconds = int(codex_cfg.get("backoff_seconds", 10))
+        attempt = 0
+        last_returncode = None
+        last_abort = None
+        while attempt <= max_retries:
+            returncode, abort_reason = run_with_timeout(cmd, cwd=cwd, timeout_seconds=timeout_seconds)
+            last_returncode = returncode
+            last_abort = abort_reason
+            if abort_reason is None and returncode == 0:
+                break
+            if abort_reason == "codex_timeout" and attempt < max_retries:
+                time.sleep(backoff_seconds)
+            else:
+                break
+            attempt += 1
+
         codex_result = {
             "enabled": True,
             "command": cmd,
-            "returncode": returncode,
-            "abort_reason": abort_reason,
+            "returncode": last_returncode,
+            "abort_reason": last_abort,
             "output_last_message": output_last,
+            "attempts": attempt + 1,
         }
-        if abort_reason == "codex_timeout":
+        if last_abort == "codex_timeout":
             codex_result["status"] = "aborted"
             manifest_path = os.path.join(run_root, "run_manifest.json")
             manifest = {}
@@ -121,6 +139,15 @@ Output files:
             write_json(manifest_path, manifest)
             print("Codex exec timed out; aborting safely.")
             return
+        elif last_returncode != 0:
+            codex_result["status"] = "failed"
+            manifest_path = os.path.join(run_root, "run_manifest.json")
+            manifest = {}
+            if os.path.exists(manifest_path):
+                manifest = read_json(manifest_path)
+            manifest["codex_exec"] = codex_result
+            write_json(manifest_path, manifest)
+            raise RuntimeError(f\"codex exec failed with code {last_returncode}\")
 
     manifest_path = os.path.join(run_root, "run_manifest.json")
     manifest = {

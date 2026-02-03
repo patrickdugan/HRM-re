@@ -32,6 +32,24 @@ def extract_nodes(world):
     return None
 
 
+def validate_node(node):
+    if not isinstance(node, dict):
+        return False, "node_not_object"
+    if "id" not in node or not node["id"]:
+        return False, "node_missing_id"
+    choices = node.get("choices")
+    if choices is None:
+        return False, "node_missing_choices"
+    if not isinstance(choices, list) or len(choices) == 0:
+        return False, "node_choices_invalid"
+    for choice in choices:
+        if not isinstance(choice, dict):
+            return False, "choice_not_object"
+        if "id" not in choice or "text" not in choice:
+            return False, "choice_missing_fields"
+    return True, ""
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=True)
@@ -88,6 +106,12 @@ def main():
             if choices is not None and len(choices) > max_choices:
                 result["reasons"].append("max_choices_exceeded")
                 break
+
+    for node in nodes:
+        ok, reason = validate_node(node)
+        if not ok:
+            result["reasons"].append(reason)
+            break
 
     if result["reasons"]:
         print(json.dumps(result))

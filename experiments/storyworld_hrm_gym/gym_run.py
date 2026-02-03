@@ -101,12 +101,16 @@ def main():
             manifest = read_json(manifest_path)
             manifest["verifier"] = {"status": "failed", "details": verify_proc.stdout.strip()}
             write_json(manifest_path, manifest)
+            if mlflow:
+                log_metrics(mlflow, {"verifier_failed": 1})
             return
         else:
             manifest_path = os.path.join(run_root, "run_manifest.json")
             manifest = read_json(manifest_path)
             manifest["verifier"] = {"status": "verified", "details": verify_proc.stdout.strip()}
             write_json(manifest_path, manifest)
+            if mlflow:
+                log_metrics(mlflow, {"verifier_failed": 0})
 
     run(["python", os.path.join(config_dir, "gym_make_dataset.py"), "--config", args.config])
     run(["python", os.path.join(config_dir, "gym_train_player.py"), "--config", args.config])
@@ -115,6 +119,12 @@ def main():
     if mlflow:
         manifest_path = os.path.join(run_root, "run_manifest.json")
         log_artifact(mlflow, manifest_path)
+        if "codex_exec" in cfg:
+            log_params(mlflow, {
+                "codex_timeout_seconds": cfg["codex_exec"].get("timeout_seconds", ""),
+                "codex_mode": cfg["codex_exec"].get("mode", ""),
+                "codex_sandbox": cfg["codex_exec"].get("sandbox", ""),
+            })
         metrics_path = os.path.join(run_root, cfg["paths"]["report_dir"], "metrics.json")
         if os.path.exists(metrics_path):
             metrics = read_json(metrics_path)
