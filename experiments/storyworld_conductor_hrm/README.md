@@ -14,6 +14,8 @@ The H-tier (planner) selects the next action; the L-tier (operator) executes tha
 - `make_conductor_dataset.py`: builds a JSONL dataset of (state -> action) examples from existing storyworlds.
 - `train_hrm_conductor.py`: trains an HRM to predict the next action.
 - `benchmark_harness.py`: runs an orchestration loop and reports progress.
+- `player_harness.py`: runs a playthrough benchmark (random, greedy, HRM player).
+- `run_full_bench.py`: runs builder + player harness across a folder.
 
 ## Generate a dataset
 
@@ -45,6 +47,18 @@ To use the trained HRM instead of heuristics:
 
 ```powershell
 python .\benchmark_harness.py --storyworld "C:\projects\GPTStoryworld\storyworlds\mihna_constitutional_alignment.json" --steps 6 --mc_runs 200 --hrm_model .\models_conductor.pt --out .\reports\mihna_benchmark_hrm.json
+```
+
+## Player harness
+
+```powershell
+python .\player_harness.py --storyworld "C:\projects\GPTStoryworld\storyworlds\mihna_constitutional_alignment.json" --episodes 30 --max_turns 25 --out .\reports\mihna_player.json
+```
+
+## Full benchmark (builder + player)
+
+```powershell
+python .\run_full_bench.py --out .\reports\full_index.json --steps 6 --mc_runs 200 --episodes 30 --max_turns 25
 ```
 
 Action mapping (generic defaults):
