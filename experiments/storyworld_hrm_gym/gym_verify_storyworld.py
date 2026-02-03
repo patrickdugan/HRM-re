@@ -26,10 +26,12 @@ def resolve_path(root, path):
 def extract_nodes(world):
     if isinstance(world, dict):
         if isinstance(world.get("nodes"), list):
-            return world["nodes"]
+            return "nodes", world["nodes"]
         if isinstance(world.get("pages"), list):
-            return world["pages"]
-    return None
+            return "pages", world["pages"]
+        if isinstance(world.get("encounters"), list):
+            return "encounters", world["encounters"]
+    return None, None
 
 
 def validate_node(node):
@@ -47,6 +49,34 @@ def validate_node(node):
             return False, "choice_not_object"
         if "id" not in choice or "text" not in choice:
             return False, "choice_missing_fields"
+    return True, ""
+
+
+def validate_encounter(encounter):
+    if not isinstance(encounter, dict):
+        return False, "encounter_not_object"
+    if "id" not in encounter or not encounter["id"]:
+        return False, "encounter_missing_id"
+    options = encounter.get("options")
+    if options is None:
+        return False, "encounter_missing_options"
+    if not isinstance(options, list) or len(options) == 0:
+        return False, "encounter_options_invalid"
+    for opt in options:
+        if not isinstance(opt, dict):
+            return False, "option_not_object"
+        if "id" not in opt or not opt["id"]:
+            return False, "option_missing_id"
+        reactions = opt.get("reactions")
+        if reactions is None:
+            return False, "option_missing_reactions"
+        if not isinstance(reactions, list):
+            return False, "option_reactions_invalid"
+        for react in reactions:
+            if not isinstance(react, dict):
+                return False, "reaction_not_object"
+            if "id" not in react or not react["id"]:
+                return False, "reaction_missing_id"
     return True, ""
 
 
@@ -88,7 +118,7 @@ def main():
         print(json.dumps(result))
         return 2
 
-    nodes = extract_nodes(world)
+    schema, nodes = extract_nodes(world)
     if nodes is None:
         result["reasons"].append("unknown_world_schema")
         print(json.dumps(result))
@@ -100,18 +130,33 @@ def main():
     if max_nodes and len(nodes) > max_nodes:
         result["reasons"].append("max_nodes_exceeded")
 
-    if max_choices:
+    if schema in ("nodes", "pages"):
+        if max_choices:
+            for node in nodes:
+                choices = node.get("choices") if isinstance(node, dict) else None
+                if choices is not None and len(choices) > max_choices:
+                    result["reasons"].append("max_choices_exceeded")
+                    break
+
         for node in nodes:
-            choices = node.get("choices") if isinstance(node, dict) else None
-            if choices is not None and len(choices) > max_choices:
-                result["reasons"].append("max_choices_exceeded")
+            ok, reason = validate_node(node)
+            if not ok:
+                result["reasons"].append(reason)
                 break
 
-    for node in nodes:
-        ok, reason = validate_node(node)
-        if not ok:
-            result["reasons"].append(reason)
-            break
+    if schema == "encounters":
+        if max_choices:
+            for enc in nodes:
+                options = enc.get("options") if isinstance(enc, dict) else None
+                if options is not None and len(options) > max_choices:
+                    result["reasons"].append("max_choices_exceeded")
+                    break
+
+        for enc in nodes:
+            ok, reason = validate_encounter(enc)
+            if not ok:
+                result["reasons"].append(reason)
+                break
 
     if result["reasons"]:
         print(json.dumps(result))
@@ -121,6 +166,7 @@ def main():
         "status": "verified",
         "node_count": len(nodes),
         "encounter_count": len(encounters),
+        "schema": schema,
     }
     print(json.dumps(result))
     return 0
