@@ -34,15 +34,45 @@ def resolve_path(root, path):
     return os.path.normpath(os.path.join(root, path))
 
 
-def run_with_timeout(cmd, cwd=None, timeout_seconds=None):
+def normalize_sandbox(value):
+    if not value:
+        return ""
+    normalized = value.strip().lower()
+    aliases = {
+        "write": "workspace-write",
+        "workspace": "workspace-write",
+        "workspace-write": "workspace-write",
+        "read": "read-only",
+        "readonly": "read-only",
+        "read-only": "read-only",
+        "danger": "danger-full-access",
+        "full": "danger-full-access",
+        "danger-full-access": "danger-full-access",
+    }
+    return aliases.get(normalized, value)
+
+
+def run_with_timeout(cmd, cwd=None, timeout_seconds=None, log_path=None):
     print("Running:", " ".join(cmd))
-    proc = subprocess.Popen(cmd, cwd=cwd)
+    log_file = None
+    if log_path:
+        os.makedirs(os.path.dirname(log_path), exist_ok=True)
+        log_file = open(log_path, "a", encoding="utf-8")
+        log_file.write(f"\n[{utc_now()}] RUN: {' '.join(cmd)}\n")
+        log_file.flush()
+    proc = subprocess.Popen(cmd, cwd=cwd, stdout=log_file, stderr=log_file)
     try:
         proc.wait(timeout=timeout_seconds)
+        if log_file:
+            log_file.write(f"[{utc_now()}] EXIT: {proc.returncode}\n")
+            log_file.close()
         return proc.returncode, None
     except subprocess.TimeoutExpired:
         proc.kill()
         proc.wait()
+        if log_file:
+            log_file.write(f"[{utc_now()}] EXIT: timeout\n")
+            log_file.close()
         return None, "codex_timeout"
 
 
@@ -123,16 +153,30 @@ def main():
                 preamble_text = f.read().strip()
 
     prompt = f"""
-You are using the storyworld-building skill. Generate a storyworld with these constraints:
+You are using the storyworld-building skill. Generate a SweepWeave storyworld with these constraints:
+- Do NOT run any tools, commands, searches, or file reads. Respond directly.
 - max_nodes: {cfg['storyworld']['max_nodes']}
 - max_choices_per_node: {cfg['storyworld']['max_choices_per_node']}
-- required outputs: world.json and encounters.jsonl
 - ensure deterministic structure using seed {cfg['seed']}
 
 Additional diversity guidance:
 {preamble_text}
 
-Output files:
+World.json must include these minimum fields:
+- IFID, storyworld_title, storyworld_author, sweepweave_version, creation_time, modified_time, debug_mode, display_mode, css_theme, font_size, language, rating, about_text, characters, authored_properties, spools, encounters, endings, unique_id_seeds
+- encounters: list of encounter objects with id, name, options
+- options: list of option objects with id, text, reactions
+- reactions: list of reaction objects with id, text
+- spools: list with id and encounters list referencing encounter ids
+- authored_properties: at least 2 entries
+- endings: at least 2 entries
+
+Output format requirements (strict):
+- Respond with exactly two fenced code blocks and no extra text.
+- First block: ```json``` containing the full world.json object.
+- Second block: ```jsonl``` containing encounters.jsonl (one JSON object per line).
+
+Output file targets (for reference only):
 - {world_path}
 - {encounters_path}
 """.strip()
@@ -144,7 +188,7 @@ Output files:
     output_last = ""
     if codex_cfg.get("enabled", False):
         mode = codex_cfg.get("mode", "").strip()
-        sandbox = codex_cfg.get("sandbox", "").strip()
+        sandbox = normalize_sandbox(codex_cfg.get("sandbox", "").strip())
         timeout_seconds = codex_cfg.get("timeout_seconds")
         output_last = resolve_path(run_root, codex_cfg.get("output_last_message", ""))
         if output_last:
@@ -180,11 +224,14 @@ Output files:
         cwd = resolve_path(config_dir, working_dir) if working_dir else None
         max_retries = int(codex_cfg.get("max_retries", 0))
         backoff_seconds = int(codex_cfg.get("backoff_seconds", 10))
+        log_path = os.path.join(run_root, "logs", "codex_exec.log")
         attempt = 0
         last_returncode = None
         last_abort = None
         while attempt <= max_retries:
-            returncode, abort_reason = run_with_timeout(cmd, cwd=cwd, timeout_seconds=timeout_seconds)
+            returncode, abort_reason = run_with_timeout(
+                cmd, cwd=cwd, timeout_seconds=timeout_seconds, log_path=log_path
+            )
             last_returncode = returncode
             last_abort = abort_reason
             if abort_reason is None and returncode == 0:
@@ -213,7 +260,13 @@ Output files:
             write_json(manifest_path, manifest)
             print("Codex exec timed out; aborting safely.")
             return
-        elif last_returncode != 0:
+        wrote = False
+        if output_last:
+            wrote = write_artifacts_from_codex(output_last, world_path, encounters_path)
+            if wrote:
+                print("Wrote storyworld artifacts from Codex output.")
+
+        if last_returncode != 0 and not wrote:
             codex_result["status"] = "failed"
             manifest_path = os.path.join(run_root, "run_manifest.json")
             manifest = {}
@@ -222,11 +275,14 @@ Output files:
             manifest["codex_exec"] = codex_result
             write_json(manifest_path, manifest)
             raise RuntimeError(f"codex exec failed with code {last_returncode}")
-
-        if not (os.path.exists(world_path) and os.path.exists(encounters_path)):
-            wrote = write_artifacts_from_codex(output_last, world_path, encounters_path)
-            if wrote:
-                print("Wrote storyworld artifacts from Codex output.")
+        elif last_returncode != 0 and wrote:
+            codex_result["status"] = "completed_with_errors"
+            manifest_path = os.path.join(run_root, "run_manifest.json")
+            manifest = {}
+            if os.path.exists(manifest_path):
+                manifest = read_json(manifest_path)
+            manifest["codex_exec"] = codex_result
+            write_json(manifest_path, manifest)
 
     manifest_path = os.path.join(run_root, "run_manifest.json")
     manifest = {

@@ -1,0 +1,10 @@
+{
+  "base_dir": "D:/HRMStoryworlds_v2",
+  "target_verified": 11,
+  "max_attempts": 1,
+  "force_lock": true,
+  "idea_factory_dir": "C:/projects/GPTStoryworld/ideaFactory",
+  "codex_enabled": true,
+  "wait_for_artifacts": true,
+  "timeout_seconds": 1800
+}
