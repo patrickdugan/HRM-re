@@ -7,6 +7,8 @@
   "progress_interval_minutes": 30,
   "trigger_verified": 50,
   "trigger_command": "python experiments/storyworld_builder_hrm/make_builder_dataset.py --input C:/projects/GPTStoryworld/storyworlds --input D:/HRMStoryworlds/verified --out D:/HRMStoryworlds/datasets/builder_dataset.jsonl && python experiments/hrm_trainer_template/train_stub.py --config experiments/storyworld_builder_hrm/builder_train_config.json",
+  "lock_file": "batch_lock.json",
+  "force_lock": false,
   "start_index": 0,
   "codex_enabled": true,
   "wait_for_artifacts": true,

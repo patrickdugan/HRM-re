@@ -54,6 +54,8 @@ def main():
     progress_interval_minutes = int(cfg.get("progress_interval_minutes", 30))
     trigger_verified = int(cfg.get("trigger_verified", 0))
     trigger_command = cfg.get("trigger_command", "")
+    lock_file = cfg.get("lock_file", "batch_lock.json")
+    force_lock = bool(cfg.get("force_lock", False))
     start_index = int(cfg.get("start_index", 1))
     codex_enabled = bool(cfg.get("codex_enabled", True))
     wait_for_artifacts = bool(cfg.get("wait_for_artifacts", True))
@@ -67,6 +69,18 @@ def main():
     ensure_dir(verified_dir)
     ensure_dir(rejected_dir)
     ensure_dir(logs_dir)
+
+    lock_path = os.path.join(base_dir, lock_file)
+    if os.path.exists(lock_path) and not force_lock:
+        print(f"Lock exists: {lock_path}. Another batch may be running.")
+        return
+    write_json(
+        lock_path,
+        {
+            "pid": os.getpid(),
+            "started_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+        },
+    )
 
     template_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "gym_config.json")
 
@@ -171,6 +185,8 @@ def main():
         },
     )
     write_progress(final=True)
+    if os.path.exists(lock_path):
+        os.remove(lock_path)
 
 
 if __name__ == "__main__":
