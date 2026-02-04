@@ -40,6 +40,12 @@ Edit `gym_batch_config.json` (end time, max attempts, and size cap), then run:
 python experiments/storyworld_hrm_gym/gym_batch_generate.py --config experiments/storyworld_hrm_gym/gym_batch_config.json
 ```
 
+For a separate batch (v2) with a new output directory and training trigger, use:
+
+```powershell
+python experiments/storyworld_hrm_gym/gym_batch_generate.py --config experiments/storyworld_hrm_gym/gym_batch_config_v2.json
+```
+
 You can also set `trigger_verified` and `trigger_command` to start training automatically
 once a threshold of verified storyworlds is reached.
 

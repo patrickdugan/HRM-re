@@ -1,0 +1,19 @@
+{
+  "base_dir": "D:/HRMStoryworlds_v2",
+  "target_verified": 200,
+  "max_attempts": 2000,
+  "max_size_bytes": 2000000,
+  "end_time_local": "2026-02-04T09:00:00",
+  "progress_interval_minutes": 30,
+  "trigger_verified": 200,
+  "trigger_command": "python experiments/storyworld_builder_hrm/make_builder_dataset.py --input C:/projects/GPTStoryworld/storyworlds --input D:/HRMStoryworlds_v2/verified --out D:/HRMStoryworlds_v2/datasets/builder_dataset.jsonl && python experiments/hrm_trainer_template/train_stub.py --config experiments/storyworld_builder_hrm/builder_train_config_v2.json",
+  "lock_file": "batch_lock.json",
+  "force_lock": false,
+  "idea_factory_dir": "C:/projects/GPTStoryworld/ideaFactory",
+  "batch_prompt_file": "batch_prompt.txt",
+  "batch_prompt_max_chars_per_file": 1200,
+  "start_index": 0,
+  "codex_enabled": true,
+  "wait_for_artifacts": true,
+  "timeout_seconds": 900
+}
