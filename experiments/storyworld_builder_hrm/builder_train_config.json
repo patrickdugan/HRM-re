@@ -1,0 +1,31 @@
+{
+  "run_id": "builder-hrm-001",
+  "max_ram_mb": 2048,
+  "max_cpu_pct": 50,
+  "max_io_mb_s": 50,
+  "chunk_strategy": "fixed",
+  "chunk_size": 1024,
+  "checkpoint_every_steps": 200,
+  "checkpoint_every_seconds": 120,
+  "max_steps": 2000,
+  "max_runtime_seconds": 14400,
+  "output_dir": "D:/HRMStoryworlds/builder_runs",
+  "dry_run": false,
+  "simulate_abort_at_step": null,
+  "train": {
+    "type": "conductor",
+    "data": "D:/HRMStoryworlds/datasets/builder_dataset.jsonl",
+    "out": "D:/HRMStoryworlds/models/builder_hrm.pt",
+    "epochs": 3,
+    "batch_size": 4,
+    "lr": 0.0002,
+    "seed": 7,
+    "dim": 192,
+    "depth": 4,
+    "heads": 6,
+    "max_examples": 0,
+    "device": "cuda",
+    "resume_checkpoint": "",
+    "resume_latest": false
+  }
+}
