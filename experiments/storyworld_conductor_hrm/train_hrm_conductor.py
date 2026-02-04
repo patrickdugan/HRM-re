@@ -335,6 +335,17 @@ def main():
                         "path": ckpt_path,
                     },
                 )
+                if args.summary_json:
+                    progress_path = os.path.join(os.path.dirname(args.summary_json), "progress.json")
+                    write_json(
+                        progress_path,
+                        {
+                            "status": "running",
+                            "steps_completed": steps_completed,
+                            "epoch": epoch,
+                            "wall_seconds": round(time.time() - start, 3),
+                        },
+                    )
                 last_ckpt = now
 
         if abort_reason:
@@ -375,6 +386,17 @@ def main():
             "wall_seconds": round(time.time() - start, 3),
         },
     )
+    if args.summary_json:
+        progress_path = os.path.join(os.path.dirname(args.summary_json), "progress.json")
+        write_json(
+            progress_path,
+            {
+                "status": status,
+                "abort_reason": abort_reason,
+                "steps_completed": steps_completed,
+                "wall_seconds": round(time.time() - start, 3),
+            },
+        )
 
     if abort_reason:
         sys.exit(2)
