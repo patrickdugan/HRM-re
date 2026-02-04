@@ -189,7 +189,7 @@ Output files:
             last_abort = abort_reason
             if abort_reason is None and returncode == 0:
                 break
-            if abort_reason == "codex_timeout" and attempt < max_retries:
+            if attempt < max_retries:
                 time.sleep(backoff_seconds)
             else:
                 break

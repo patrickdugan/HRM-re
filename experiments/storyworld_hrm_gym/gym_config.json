@@ -31,8 +31,8 @@
     "mode": "",
     "sandbox": "",
     "timeout_seconds": 900,
-    "max_retries": 1,
-    "backoff_seconds": 10,
+    "max_retries": 3,
+    "backoff_seconds": 30,
     "output_last_message": "prompts/codex_last_message.txt",
     "working_dir": ""
   },
