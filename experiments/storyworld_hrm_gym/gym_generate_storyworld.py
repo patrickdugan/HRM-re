@@ -155,6 +155,7 @@ def main():
     prompt = f"""
 You are using the storyworld-building skill. Generate a SweepWeave storyworld with these constraints:
 - Do NOT run any tools, commands, searches, or file reads. Respond directly.
+- Follow production-quality requirements in C:/projects/GPTStoryworld/codex-skills/storyworld-building/references/PRODUCTION_QUALITY.md.
 - max_nodes: {cfg['storyworld']['max_nodes']}
 - max_choices_per_node: {cfg['storyworld']['max_choices_per_node']}
 - ensure deterministic structure using seed {cfg['seed']}
@@ -170,6 +171,14 @@ World.json must include these minimum fields:
 - spools: list with id and encounters list referencing encounter ids
 - authored_properties: at least 2 entries
 - endings: at least 2 entries
+
+Quality constraints (strict):
+- Each non-ending encounter must have at least 2 options.
+- Each option must have at least 2 reactions.
+- Each reaction must include a desirability_script that uses relevant variables (not constants).
+- Each reaction must include at least 3 after_effects (plus any spool changes or encounter transitions).
+- Include acceptability/desirability scripts on encounters and visibility scripts on some options to create variable Act II/III experiences.
+- Ensure effects create meaningful metric distance across the arc (properties should noticeably diverge by late Act III).
 
 Output format requirements (strict):
 - Respond with exactly two fenced code blocks and no extra text.
