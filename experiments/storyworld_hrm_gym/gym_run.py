@@ -22,6 +22,10 @@ def write_json(path, obj):
         json.dump(obj, f, indent=2)
 
 
+def ensure_dir(path):
+    os.makedirs(path, exist_ok=True)
+
+
 def resolve_path(root, path):
     if not path:
         return path
@@ -30,8 +34,18 @@ def resolve_path(root, path):
     return os.path.normpath(os.path.join(root, path))
 
 
-def run(cmd):
+def run(cmd, log_path=None):
     print("Running:", " ".join(cmd))
+    if log_path:
+        ensure_dir(os.path.dirname(log_path))
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(f"\n[RUN] {' '.join(cmd)}\n")
+            proc = subprocess.Popen(cmd, stdout=f, stderr=f)
+            returncode = proc.wait()
+            f.write(f"[EXIT] {returncode}\n")
+        if returncode != 0:
+            raise subprocess.CalledProcessError(returncode, cmd)
+        return
     subprocess.check_call(cmd)
 
 def artifacts_exist(storyworld_dir, world_name, encounters_name):
@@ -51,6 +65,8 @@ def main():
     run_root = resolve_path(config_dir, cfg["paths"]["root"])
 
     os.makedirs(run_root, exist_ok=True)
+    logs_dir = os.path.join(run_root, "logs")
+    ensure_dir(logs_dir)
 
     manifest_path = os.path.join(run_root, "run_manifest.json")
     if not os.path.exists(manifest_path):
@@ -69,7 +85,10 @@ def main():
         mlflow.start_run(run_name=cfg.get("run_id"))
         log_params(mlflow, {"run_id": cfg.get("run_id"), "seed": cfg.get("seed")})
 
-    run(["python", os.path.join(script_dir, "gym_generate_storyworld.py"), "--config", args.config])
+    run(
+        ["python", os.path.join(script_dir, "gym_generate_storyworld.py"), "--config", args.config],
+        log_path=os.path.join(logs_dir, "storyworld_gen.log"),
+    )
     print("Step complete: storyworld prompt written. Generate artifacts, then continue.")
 
     storyworld_dir = os.path.join(run_root, cfg["paths"]["storyworld_dir"])
@@ -105,7 +124,15 @@ def main():
     if cfg.get("verifier", {}).get("enabled", True):
         verify_cmd = ["python", os.path.join(script_dir, "gym_verify_storyworld.py"), "--config", args.config]
         print("Running:", " ".join(verify_cmd))
+        verify_log = os.path.join(logs_dir, "verify.log")
         verify_proc = subprocess.run(verify_cmd, capture_output=True, text=True)
+        with open(verify_log, "a", encoding="utf-8") as f:
+            f.write(f"\n[RUN] {' '.join(verify_cmd)}\n")
+            f.write(verify_proc.stdout)
+            if verify_proc.stderr:
+                f.write("\n[STDERR]\n")
+                f.write(verify_proc.stderr)
+            f.write(f"\n[EXIT] {verify_proc.returncode}\n")
         if verify_proc.returncode != 0:
             print("Verifier failed:", verify_proc.stdout.strip())
             manifest_path = os.path.join(run_root, "run_manifest.json")
@@ -123,9 +150,18 @@ def main():
             if mlflow:
                 log_metrics(mlflow, {"verifier_failed": 0})
 
-    run(["python", os.path.join(script_dir, "gym_make_dataset.py"), "--config", args.config])
-    run(["python", os.path.join(script_dir, "gym_train_player.py"), "--config", args.config])
-    run(["python", os.path.join(script_dir, "gym_eval.py"), "--config", args.config])
+    run(
+        ["python", os.path.join(script_dir, "gym_make_dataset.py"), "--config", args.config],
+        log_path=os.path.join(logs_dir, "dataset.log"),
+    )
+    run(
+        ["python", os.path.join(script_dir, "gym_train_player.py"), "--config", args.config],
+        log_path=os.path.join(logs_dir, "train.log"),
+    )
+    run(
+        ["python", os.path.join(script_dir, "gym_eval.py"), "--config", args.config],
+        log_path=os.path.join(logs_dir, "eval.log"),
+    )
 
     if mlflow:
         manifest_path = os.path.join(run_root, "run_manifest.json")
