@@ -169,6 +169,7 @@ def main():
     parser.add_argument("--max_steps", type=int, default=0)
     parser.add_argument("--max_runtime_seconds", type=int, default=0)
     parser.add_argument("--io_mb_s", type=float, default=0.0)
+    parser.add_argument("--io_grace_seconds", type=float, default=5.0)
     parser.add_argument("--log_jsonl", default="")
     parser.add_argument("--summary_json", default="")
     parser.add_argument("--resume_checkpoint", default="")
@@ -304,7 +305,7 @@ def main():
                         "io_mb_s": round(rate_mb_s, 3),
                     },
                 )
-                if over:
+                if over and (now - last_ckpt) >= args.io_grace_seconds:
                     abort_reason = "io_cap_exceeded"
                     break
 

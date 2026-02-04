@@ -3,6 +3,7 @@
   "max_ram_mb": 2048,
   "max_cpu_pct": 50,
   "max_io_mb_s": 50,
+  "io_grace_seconds": 10,
   "chunk_strategy": "fixed",
   "chunk_size": 1024,
   "checkpoint_every_steps": 800,

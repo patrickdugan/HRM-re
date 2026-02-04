@@ -178,6 +178,8 @@ def main():
         str(cfg.get("max_runtime_seconds", 0)),
         "--io_mb_s",
         str(cfg.get("max_io_mb_s", 0)),
+        "--io_grace_seconds",
+        str(cfg.get("io_grace_seconds", 5.0)),
         "--resume_checkpoint",
         str(resolve_path(train_cfg.get("resume_checkpoint")) or ""),
         "--resume_latest" if auto_resume else None,
