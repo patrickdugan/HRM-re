@@ -46,6 +46,51 @@ def run_with_timeout(cmd, cwd=None, timeout_seconds=None):
         return None, "codex_timeout"
 
 
+def extract_blocks(text):
+    blocks = []
+    fence = "```"
+    idx = 0
+    while True:
+        start = text.find(fence, idx)
+        if start == -1:
+            break
+        lang_end = text.find("\n", start + len(fence))
+        if lang_end == -1:
+            break
+        lang = text[start + len(fence) : lang_end].strip()
+        end = text.find(fence, lang_end + 1)
+        if end == -1:
+            break
+        content = text[lang_end + 1 : end]
+        blocks.append((lang, content.strip()))
+        idx = end + len(fence)
+    return blocks
+
+
+def write_artifacts_from_codex(output_last, world_path, encounters_path):
+    if not output_last or not os.path.exists(output_last):
+        return False
+    with open(output_last, "r", encoding="utf-8", errors="ignore") as f:
+        text = f.read()
+    blocks = extract_blocks(text)
+    world_block = None
+    encounters_block = None
+    for lang, content in blocks:
+        if lang == "json" and world_block is None:
+            world_block = content
+        if lang == "jsonl" and encounters_block is None:
+            encounters_block = content
+    if world_block:
+        ensure_dir(os.path.dirname(world_path))
+        with open(world_path, "w", encoding="utf-8") as f:
+            f.write(world_block + "\n")
+    if encounters_block:
+        ensure_dir(os.path.dirname(encounters_path))
+        with open(encounters_path, "w", encoding="utf-8") as f:
+            f.write(encounters_block + "\n")
+    return bool(world_block or encounters_block)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=True)
@@ -166,6 +211,11 @@ Output files:
             manifest["codex_exec"] = codex_result
             write_json(manifest_path, manifest)
             raise RuntimeError(f"codex exec failed with code {last_returncode}")
+
+        if not (os.path.exists(world_path) and os.path.exists(encounters_path)):
+            wrote = write_artifacts_from_codex(output_last, world_path, encounters_path)
+            if wrote:
+                print("Wrote storyworld artifacts from Codex output.")
 
     manifest_path = os.path.join(run_root, "run_manifest.json")
     manifest = {

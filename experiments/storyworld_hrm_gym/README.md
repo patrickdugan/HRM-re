@@ -46,6 +46,8 @@ execution by setting `codex_exec.enabled: true` and providing the appropriate
 flags. The prompt will still reference the `storyworld-building` skill.
 The wrapper enforces a wall-clock timeout and classifies timeouts as aborted.
 Artifacts are verified before training.
+If Codex cannot write to the target path, the runner will extract JSON/JSONL from
+the Codex output and save them locally.
 
 Example:
 
