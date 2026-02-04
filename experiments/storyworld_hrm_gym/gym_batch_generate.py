@@ -52,6 +52,8 @@ def main():
     max_size_bytes = int(cfg.get("max_size_bytes", 0))
     end_time_local = cfg.get("end_time_local")
     progress_interval_minutes = int(cfg.get("progress_interval_minutes", 30))
+    trigger_verified = int(cfg.get("trigger_verified", 0))
+    trigger_command = cfg.get("trigger_command", "")
     start_index = int(cfg.get("start_index", 1))
     codex_enabled = bool(cfg.get("codex_enabled", True))
     wait_for_artifacts = bool(cfg.get("wait_for_artifacts", True))
@@ -75,6 +77,7 @@ def main():
     if end_time_local:
         end_time = datetime.fromisoformat(end_time_local)
     next_report = datetime.now() + timedelta(minutes=progress_interval_minutes)
+    trigger_fired = False
 
     def write_progress(final=False):
         percent = round((verified_count / target_verified) * 100, 2) if target_verified else 0.0
@@ -125,6 +128,14 @@ def main():
                     dest = os.path.join(verified_dir, f"{run_id}.json")
                     copy_if_exists(world_path, dest)
                     verified_count += 1
+                    if trigger_verified and not trigger_fired and verified_count >= trigger_verified and trigger_command:
+                        try:
+                            run(["cmd", "/c", trigger_command])
+                            trigger_fired = True
+                        except subprocess.CalledProcessError as exc:
+                            log_path = os.path.join(logs_dir, "trigger_error.txt")
+                            with open(log_path, "w", encoding="utf-8") as f:
+                                f.write(str(exc))
             elif verifier.get("status") == "failed":
                 world_path = os.path.join(run_root, "storyworld", "world.json")
                 dest = os.path.join(rejected_dir, f"{run_id}.json")

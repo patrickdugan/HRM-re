@@ -39,6 +39,9 @@ Edit `gym_batch_config.json` (end time, max attempts, and size cap), then run:
 python experiments/storyworld_hrm_gym/gym_batch_generate.py --config experiments/storyworld_hrm_gym/gym_batch_config.json
 ```
 
+You can also set `trigger_verified` and `trigger_command` to start training automatically
+once a threshold of verified storyworlds is reached.
+
 ## Optional Codex CLI hook
 
 If you have the official `codex` CLI authenticated, you can enable automatic
