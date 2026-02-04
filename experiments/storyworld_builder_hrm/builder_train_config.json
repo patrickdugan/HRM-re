@@ -1,5 +1,5 @@
 {
-  "run_id": "builder-hrm-001",
+  "run_id": "builder-hrm-002",
   "max_ram_mb": 2048,
   "max_cpu_pct": 50,
   "max_io_mb_s": 50,
@@ -27,6 +27,6 @@
     "max_examples": 0,
     "device": "cuda",
     "resume_checkpoint": "",
-    "resume_latest": true
+    "resume_latest": false
   }
 }
