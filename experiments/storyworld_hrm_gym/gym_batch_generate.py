@@ -71,7 +71,17 @@ def main():
     template_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "gym_config.json")
 
     verified_count = len([f for f in os.listdir(verified_dir) if f.endswith(".json")])
-    idx = start_index
+    if start_index <= 0:
+        existing = []
+        for name in os.listdir(runs_dir):
+            if name.startswith("run_"):
+                try:
+                    existing.append(int(name.replace("run_", "")))
+                except ValueError:
+                    continue
+        idx = (max(existing) + 1) if existing else 1
+    else:
+        idx = start_index
     attempts = 0
     end_time = None
     if end_time_local:
