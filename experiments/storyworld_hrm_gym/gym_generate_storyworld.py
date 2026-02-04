@@ -114,12 +114,23 @@ def main():
     world_path = resolve_path(storyworld_dir, world_rel)
     encounters_path = resolve_path(storyworld_dir, encounters_rel)
 
+    preamble_path = cfg["storyworld"].get("prompt_preamble_file") or ""
+    preamble_text = ""
+    if preamble_path:
+        preamble_path = resolve_path(run_root, preamble_path)
+        if os.path.exists(preamble_path):
+            with open(preamble_path, "r", encoding="utf-8", errors="ignore") as f:
+                preamble_text = f.read().strip()
+
     prompt = f"""
 You are using the storyworld-building skill. Generate a storyworld with these constraints:
 - max_nodes: {cfg['storyworld']['max_nodes']}
 - max_choices_per_node: {cfg['storyworld']['max_choices_per_node']}
 - required outputs: world.json and encounters.jsonl
 - ensure deterministic structure using seed {cfg['seed']}
+
+Additional diversity guidance:
+{preamble_text}
 
 Output files:
 - {world_path}

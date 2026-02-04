@@ -161,6 +161,11 @@ def main():
 
     max_nodes = int(cfg["storyworld"].get("max_nodes", 0))
     max_choices = int(cfg["storyworld"].get("max_choices_per_node", 0))
+    novelty = cfg.get("verifier", {}).get("novelty", {})
+    min_encounters = int(novelty.get("min_encounters", 0))
+    min_unique_vars = int(novelty.get("min_unique_vars", 0))
+    min_endings = int(novelty.get("min_endings", 0))
+    min_spools = int(novelty.get("min_spools", 0))
 
     if max_nodes and len(nodes) > max_nodes:
         result["reasons"].append("max_nodes_exceeded")
@@ -180,6 +185,9 @@ def main():
                 break
 
     if schema == "encounters":
+        if min_encounters and len(nodes) < min_encounters:
+            result["reasons"].append("min_encounters_not_met")
+
         if max_choices:
             for enc in nodes:
                 options = enc.get("options") if isinstance(enc, dict) else None
@@ -198,6 +206,25 @@ def main():
             ok, reason = validate_spools(world, encounter_ids)
             if not ok:
                 result["reasons"].append(reason)
+
+    if min_spools:
+        spools = world.get("spools")
+        if not isinstance(spools, list) or len(spools) < min_spools:
+            result["reasons"].append("min_spools_not_met")
+
+    if min_unique_vars:
+        vars_count = 0
+        if isinstance(world.get("authored_properties"), list):
+            vars_count = len(world.get("authored_properties"))
+        if isinstance(world.get("variables"), dict):
+            vars_count = max(vars_count, len(world.get("variables")))
+        if vars_count < min_unique_vars:
+            result["reasons"].append("min_unique_vars_not_met")
+
+    if min_endings:
+        endings = world.get("endings")
+        if not isinstance(endings, list) or len(endings) < min_endings:
+            result["reasons"].append("min_endings_not_met")
 
     if result["reasons"]:
         print(json.dumps(result))

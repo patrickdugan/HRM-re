@@ -56,6 +56,9 @@ def main():
     trigger_command = cfg.get("trigger_command", "")
     lock_file = cfg.get("lock_file", "batch_lock.json")
     force_lock = bool(cfg.get("force_lock", False))
+    idea_factory_dir = cfg.get("idea_factory_dir", "")
+    batch_prompt_file = cfg.get("batch_prompt_file", "batch_prompt.txt")
+    batch_prompt_max_chars = int(cfg.get("batch_prompt_max_chars_per_file", 1200))
     start_index = int(cfg.get("start_index", 1))
     codex_enabled = bool(cfg.get("codex_enabled", True))
     wait_for_artifacts = bool(cfg.get("wait_for_artifacts", True))
@@ -81,6 +84,25 @@ def main():
             "started_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
         },
     )
+
+    batch_prompt_path = os.path.join(base_dir, batch_prompt_file)
+    if idea_factory_dir and not os.path.exists(batch_prompt_path):
+        tropes_dir = os.path.join(idea_factory_dir, "tropes")
+        sources_dir = os.path.join(idea_factory_dir, "sources")
+        parts = []
+        if os.path.isdir(tropes_dir):
+            for name in sorted(os.listdir(tropes_dir)):
+                if name.endswith(".md"):
+                    with open(os.path.join(tropes_dir, name), "r", encoding="utf-8", errors="ignore") as f:
+                        parts.append(f.read()[:batch_prompt_max_chars])
+        if os.path.isdir(sources_dir):
+            for name in sorted(os.listdir(sources_dir)):
+                if name.endswith(".md"):
+                    with open(os.path.join(sources_dir, name), "r", encoding="utf-8", errors="ignore") as f:
+                        parts.append(f.read()[:batch_prompt_max_chars])
+        if parts:
+            with open(batch_prompt_path, "w", encoding="utf-8") as f:
+                f.write("\n\n".join(parts).strip() + "\n")
 
     template_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "gym_config.json")
 
@@ -131,6 +153,10 @@ def main():
 
         run_cfg_path = os.path.join(run_root, "gym_config.json")
         build_run_config(template_path, run_cfg_path, run_root, run_id, codex_enabled, wait_for_artifacts, timeout_seconds)
+        if os.path.exists(batch_prompt_path):
+            run_cfg = read_json(run_cfg_path)
+            run_cfg["storyworld"]["prompt_preamble_file"] = batch_prompt_path
+            write_json(run_cfg_path, run_cfg)
 
         try:
             run(["python", os.path.join(os.path.dirname(os.path.abspath(__file__)), "gym_run.py"), "--config", run_cfg_path])

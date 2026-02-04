@@ -82,7 +82,14 @@ def main():
     args = parser.parse_args()
 
     random.seed(args.seed)
-    tools = ["codex", "storyworld-building", "verifier", "json_editor"]
+    tools = [
+        "codex",
+        "storyworld-building",
+        "verifier",
+        "json_editor",
+        "diversity_sampler",
+        "tropes_resource",
+    ]
     records = []
 
     files = list(iter_storyworld_files(args.input))
@@ -103,6 +110,18 @@ def main():
                 args.max_encounters,
             )
         )
+        world_id = world.get("IFID") or world.get("world_id") or os.path.basename(path)
+        base_state = f"WORLD_ID: {world_id}\\nPHASE: PLAN"
+        for action in [
+            "ADD_HIDDEN_VAR",
+            "ADD_SECRET_ENDING",
+            "ADD_TENSION_CURVE",
+            "ADD_VALUE_CONFLICT",
+            "ADD_RIVAL_FACTION",
+            "ADD_NEGOTIATION_PACT",
+            "ADD_IRREVERSIBLE_CHOICE",
+        ]:
+            records.append({"state": base_state, "tools": tools, "action": action})
 
     write_jsonl(args.out, records)
     print(f"Wrote {args.out} ({len(records)} records)")

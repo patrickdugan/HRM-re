@@ -21,6 +21,7 @@
     "max_nodes": 120,
     "max_choices_per_node": 4,
     "prompt_file": "prompts/storyworld_prompt.txt",
+    "prompt_preamble_file": "",
     "output_world": "world.json",
     "output_encounters": "encounters.jsonl"
   },
@@ -36,7 +37,13 @@
     "working_dir": ""
   },
   "verifier": {
-    "enabled": true
+    "enabled": true,
+    "novelty": {
+      "min_encounters": 8,
+      "min_unique_vars": 2,
+      "min_endings": 2,
+      "min_spools": 1
+    }
   },
   "wait_for_artifacts": false,
   "wait_timeout_seconds": 900,
