@@ -11,9 +11,9 @@
   "force_lock": false,
   "idea_factory_dir": "C:/projects/GPTStoryworld/ideaFactory",
   "batch_prompt_file": "batch_prompt.txt",
-  "batch_prompt_max_chars_per_file": 1200,
+  "batch_prompt_max_chars_per_file": 400,
   "start_index": 0,
   "codex_enabled": true,
   "wait_for_artifacts": true,
-  "timeout_seconds": 900
+  "timeout_seconds": 1800
 }

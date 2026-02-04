@@ -18,8 +18,8 @@
     "report_dir": "reports"
   },
   "storyworld": {
-    "max_nodes": 120,
-    "max_choices_per_node": 4,
+    "max_nodes": 60,
+    "max_choices_per_node": 3,
     "prompt_file": "prompts/storyworld_prompt.txt",
     "prompt_preamble_file": "",
     "output_world": "world.json",
