@@ -22,6 +22,7 @@ class StoryworldStateSample:
     ending_acceptability: Optional[torch.Tensor] = None
     ending_structural_distance: Optional[torch.Tensor] = None
     ending_metric_distance: Optional[torch.Tensor] = None
+    world_grades: Optional[torch.Tensor] = None
     meta: Dict = field(default_factory=dict)
 
 
@@ -253,6 +254,7 @@ class StoryworldStateDataset(Dataset):
         include_delta: bool = True,
         include_scripts: bool = True,
         include_endings: bool = True,
+        include_grades: bool = False,
     ):
         self.inputs = inputs
         self.max_vars = max_vars
@@ -260,10 +262,12 @@ class StoryworldStateDataset(Dataset):
         self.include_delta = include_delta
         self.include_scripts = include_scripts
         self.include_endings = include_endings
+        self.include_grades = include_grades
 
         self.var_to_idx = self._build_var_index()
         self.ending_ids = self._build_endings() if self.include_endings else []
         self.ending_to_idx = {eid: i for i, eid in enumerate(self.ending_ids)}
+        self.grade_keys: List[str] = []
         self.samples = self._build_samples()
 
     def _build_var_index(self) -> Dict[str, int]:
@@ -431,6 +435,9 @@ class StoryworldStateDataset(Dataset):
 
     def _build_samples(self) -> List[StoryworldStateSample]:
         samples: List[StoryworldStateSample] = []
+        grade_cache: Dict[str, torch.Tensor] = {}
+        if self.include_grades:
+            from .storyworld_llm_grades import compute_storyworld_grades
         for path, kind, row in _iter_inputs(self.inputs):
             if kind == "jsonl":
                 for step in row.get("steps", []):
@@ -457,6 +464,17 @@ class StoryworldStateDataset(Dataset):
                         )
                     )
             elif kind == "storyworld":
+                world_grades = None
+                if self.include_grades:
+                    if path not in grade_cache:
+                        grades = compute_storyworld_grades(row)
+                        if not self.grade_keys:
+                            self.grade_keys = sorted(grades.keys())
+                        grade_cache[path] = torch.tensor(
+                            [float(grades.get(k, 0.0)) for k in self.grade_keys],
+                            dtype=torch.float32,
+                        )
+                    world_grades = grade_cache[path]
                 base_state: Dict[str, float] = {}
                 for char in row.get("characters", []) or []:
                     char_id = char.get("id")
@@ -554,6 +572,7 @@ class StoryworldStateDataset(Dataset):
                                     ending_acceptability=ending_accept,
                                     ending_structural_distance=ending_distance,
                                     ending_metric_distance=ending_metric,
+                                    world_grades=world_grades,
                                     meta=meta,
                                 )
                             )
