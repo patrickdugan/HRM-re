@@ -39,15 +39,23 @@ def compute_storyworld_grades(data: Dict[str, Any], mc_runs: int = 200, seed: in
     grades["effect_diversity"] = SweepweaveValidator.compute_effect_diversity(data)
     grades["gating_score"] = SweepweaveValidator.compute_gating_score(data)
     grades["ending_diversity"] = SweepweaveValidator.compute_ending_diversity(data)
-    grades["dead_end_rate"] = SweepweaveValidator.compute_dead_end_rate(data, runs=mc_runs, seed=seed)
-    max_share, min_share = SweepweaveValidator.compute_ending_balance(data, runs=mc_runs, seed=seed)
-    grades["ending_max_share"] = max_share
-    grades["ending_min_share"] = min_share
-    grades["late_block_rate"] = SweepweaveValidator.compute_late_block_rate(data, runs=mc_runs, seed=seed)
-    grades["secret_reachability"] = SweepweaveValidator.compute_secret_reachability(data, runs=mc_runs, seed=seed)
-    grades["unreachable_endings_score"] = SweepweaveValidator.compute_unreachable_endings_score(
-        data, runs=mc_runs, seed=seed
-    )
+    if mc_runs and mc_runs > 0:
+        grades["dead_end_rate"] = SweepweaveValidator.compute_dead_end_rate(data, runs=mc_runs, seed=seed)
+        max_share, min_share = SweepweaveValidator.compute_ending_balance(data, runs=mc_runs, seed=seed)
+        grades["ending_max_share"] = max_share
+        grades["ending_min_share"] = min_share
+        grades["late_block_rate"] = SweepweaveValidator.compute_late_block_rate(data, runs=mc_runs, seed=seed)
+        grades["secret_reachability"] = SweepweaveValidator.compute_secret_reachability(data, runs=mc_runs, seed=seed)
+        grades["unreachable_endings_score"] = SweepweaveValidator.compute_unreachable_endings_score(
+            data, runs=mc_runs, seed=seed
+        )
+    else:
+        grades["dead_end_rate"] = 0.0
+        grades["ending_max_share"] = 0.0
+        grades["ending_min_share"] = 0.0
+        grades["late_block_rate"] = 0.0
+        grades["secret_reachability"] = 0.0
+        grades["unreachable_endings_score"] = 0.0
     grades["effects_per_reaction"] = SweepweaveValidator.compute_effects_per_reaction(data)
     grades["reactions_per_option"] = SweepweaveValidator.compute_reactions_per_option(data)
     grades["options_per_encounter"] = SweepweaveValidator.compute_options_per_encounter(data)

@@ -1,0 +1,33 @@
+{
+  "run_id": "hrm-state-100m-001",
+  "max_ram_mb": 2048,
+  "max_cpu_pct": 50,
+  "max_io_mb_s": 50,
+  "chunk_strategy": "adaptive",
+  "chunk_size": 2048,
+  "checkpoint_every_steps": 100,
+  "checkpoint_every_seconds": 60,
+  "max_steps": 2000,
+  "max_runtime_seconds": 28800,
+  "output_dir": "outputs",
+  "dry_run": false,
+  "simulate_abort_at_step": null,
+  "train": {
+    "type": "custom",
+    "module": "experiments.storyworld_state_training.train_state_hrm",
+    "entry": "main",
+    "data": "C:/projects/GPTStoryworld/storyworlds",
+    "out": "outputs/hrm-state-100m-001/model.pt",
+    "epochs": 3,
+    "batch_size": 1,
+    "lr": 0.0002,
+    "seed": 7,
+    "dim": 768,
+    "depth": 8,
+    "heads": 8,
+    "max_examples": 8000,
+    "device": "cpu",
+    "resume_checkpoint": "",
+    "resume_latest": true
+  }
+}

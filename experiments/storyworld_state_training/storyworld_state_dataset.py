@@ -255,6 +255,7 @@ class StoryworldStateDataset(Dataset):
         include_scripts: bool = True,
         include_endings: bool = True,
         include_grades: bool = False,
+        grades_mc_runs: int = 0,
     ):
         self.inputs = inputs
         self.max_vars = max_vars
@@ -263,6 +264,7 @@ class StoryworldStateDataset(Dataset):
         self.include_scripts = include_scripts
         self.include_endings = include_endings
         self.include_grades = include_grades
+        self.grades_mc_runs = grades_mc_runs
 
         self.var_to_idx = self._build_var_index()
         self.ending_ids = self._build_endings() if self.include_endings else []
@@ -467,7 +469,7 @@ class StoryworldStateDataset(Dataset):
                 world_grades = None
                 if self.include_grades:
                     if path not in grade_cache:
-                        grades = compute_storyworld_grades(row)
+                        grades = compute_storyworld_grades(row, mc_runs=self.grades_mc_runs)
                         if not self.grade_keys:
                             self.grade_keys = sorted(grades.keys())
                         grade_cache[path] = torch.tensor(
