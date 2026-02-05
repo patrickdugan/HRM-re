@@ -296,6 +296,7 @@ def main():
     parser.add_argument("--heads", type=int, default=8)
     parser.add_argument("--max_examples", type=int, default=8000)
     parser.add_argument("--device", default="cpu")
+    parser.add_argument("--fp16", action="store_true")
     parser.add_argument("--checkpoint_dir", default="")
     parser.add_argument("--checkpoint_every_steps", type=int, default=100)
     parser.add_argument("--checkpoint_every_seconds", type=int, default=60)
@@ -348,6 +349,8 @@ def main():
     ).to(args.device)
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr)
+    use_fp16 = bool(args.fp16 and args.device == "cuda")
+    scaler = torch.cuda.amp.GradScaler(enabled=use_fp16)
 
     resume_step = 0
     resume_epoch = 0
@@ -413,47 +416,53 @@ def main():
         for batch in loader:
             batch = Batch(**{k: (v.to(args.device) if isinstance(v, torch.Tensor) else v) for k, v in batch.__dict__.items()})
             optimizer.zero_grad()
-            (
-                state_pred,
-                ops_pred,
-                scripts_pred,
-                endings_pred,
-                endings_accept,
-                endings_struct,
-                endings_metric,
-                grades_pred,
-            ) = model(batch.state_t)
+            with torch.cuda.amp.autocast(enabled=use_fp16):
+                (
+                    state_pred,
+                    ops_pred,
+                    scripts_pred,
+                    endings_pred,
+                    endings_accept,
+                    endings_struct,
+                    endings_metric,
+                    grades_pred,
+                ) = model(batch.state_t)
 
-            loss = mse(state_pred, batch.state_t_next) * loss_weights["state"]
+                loss = mse(state_pred, batch.state_t_next) * loss_weights["state"]
 
-            if ops_pred is not None and batch.operators is not None:
-                loss = loss + bce(ops_pred, batch.operators) * loss_weights["ops"]
+                if ops_pred is not None and batch.operators is not None:
+                    loss = loss + bce(ops_pred, batch.operators) * loss_weights["ops"]
 
-            script_targets = [
-                batch.encounter_acceptability,
-                batch.encounter_desirability,
-                batch.option_visibility,
-                batch.option_performability,
-                batch.reaction_desirability,
-            ]
-            if all(t is not None for t in script_targets):
-                scripts_target = torch.stack(script_targets, dim=1)
-                loss = loss + mse(scripts_pred, scripts_target) * loss_weights["scripts"]
+                script_targets = [
+                    batch.encounter_acceptability,
+                    batch.encounter_desirability,
+                    batch.option_visibility,
+                    batch.option_performability,
+                    batch.reaction_desirability,
+                ]
+                if all(t is not None for t in script_targets):
+                    scripts_target = torch.stack(script_targets, dim=1)
+                    loss = loss + mse(scripts_pred, scripts_target) * loss_weights["scripts"]
 
-            if endings_pred is not None and batch.ending_scores is not None:
-                loss = loss + mse(endings_pred, batch.ending_scores) * loss_weights["endings"]
-            if endings_accept is not None and batch.ending_acceptability is not None:
-                loss = loss + mse(endings_accept, batch.ending_acceptability) * loss_weights["endings"]
-            if endings_struct is not None and batch.ending_structural_distance is not None:
-                loss = loss + mse(endings_struct, batch.ending_structural_distance) * loss_weights["endings"]
-            if endings_metric is not None and batch.ending_metric_distance is not None:
-                loss = loss + mse(endings_metric, batch.ending_metric_distance) * loss_weights["endings"]
+                if endings_pred is not None and batch.ending_scores is not None:
+                    loss = loss + mse(endings_pred, batch.ending_scores) * loss_weights["endings"]
+                if endings_accept is not None and batch.ending_acceptability is not None:
+                    loss = loss + mse(endings_accept, batch.ending_acceptability) * loss_weights["endings"]
+                if endings_struct is not None and batch.ending_structural_distance is not None:
+                    loss = loss + mse(endings_struct, batch.ending_structural_distance) * loss_weights["endings"]
+                if endings_metric is not None and batch.ending_metric_distance is not None:
+                    loss = loss + mse(endings_metric, batch.ending_metric_distance) * loss_weights["endings"]
 
-            if grades_pred is not None and batch.world_grades is not None:
-                loss = loss + mse(grades_pred, batch.world_grades) * loss_weights["grades"]
+                if grades_pred is not None and batch.world_grades is not None:
+                    loss = loss + mse(grades_pred, batch.world_grades) * loss_weights["grades"]
 
-            loss.backward()
-            optimizer.step()
+            if use_fp16:
+                scaler.scale(loss).backward()
+                scaler.step(optimizer)
+                scaler.update()
+            else:
+                loss.backward()
+                optimizer.step()
             total_loss += loss.item()
             steps_completed += 1
 

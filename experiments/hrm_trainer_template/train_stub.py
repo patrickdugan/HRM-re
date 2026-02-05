@@ -166,6 +166,7 @@ def main():
         str(train_cfg.get("max_examples", 0)),
         "--device",
         str(train_cfg.get("device", "cpu")),
+        "--fp16" if train_cfg.get("fp16") else None,
         "--checkpoint_dir",
         checkpoint_dir,
         "--checkpoint_every_steps",

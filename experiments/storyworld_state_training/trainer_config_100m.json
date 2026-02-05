@@ -1,6 +1,6 @@
 {
   "run_id": "hrm-state-100m-001",
-  "max_ram_mb": 2048,
+  "max_ram_mb": 3584,
   "max_cpu_pct": 50,
   "max_io_mb_s": 50,
   "chunk_strategy": "adaptive",
@@ -26,7 +26,8 @@
     "depth": 8,
     "heads": 8,
     "max_examples": 8000,
-    "device": "cpu",
+    "device": "cuda",
+    "fp16": true,
     "resume_checkpoint": "",
     "resume_latest": true
   }
