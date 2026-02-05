@@ -17,7 +17,7 @@ if ($maxRamMb -le 0 -or $maxCpuPct -le 0) {
   exit 1
 }
 
-$memoryLimitBytes = $maxRamMb * 1MB
+$memoryLimitBytes = [UInt64]($maxRamMb * 1MB)
 $cpuRatePermille = [int]($maxCpuPct * 100)
 
 Add-Type -TypeDefinition @"
@@ -91,7 +91,7 @@ if ($job -eq [IntPtr]::Zero) {
 # Memory cap
 $limit = New-Object JobObject+JOBOBJECT_EXTENDED_LIMIT_INFORMATION
 $limit.BasicLimitInformation.LimitFlags = [JobObject]::JOB_OBJECT_LIMIT_PROCESS_MEMORY
-$limit.ProcessMemoryLimit = [UIntPtr]$memoryLimitBytes
+$limit.ProcessMemoryLimit = [UIntPtr]::new($memoryLimitBytes)
 $size = [System.Runtime.InteropServices.Marshal]::SizeOf($limit)
 $ptr = [System.Runtime.InteropServices.Marshal]::AllocHGlobal($size)
 [System.Runtime.InteropServices.Marshal]::StructureToPtr($limit, $ptr, $false)

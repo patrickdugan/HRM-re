@@ -9,7 +9,7 @@
   "checkpoint_every_seconds": 60,
   "max_steps": 2000,
   "max_runtime_seconds": 28800,
-  "output_dir": "outputs",
+  "output_dir": "D:/HRMStoryworlds_v2/hrm_state_runs",
   "dry_run": false,
   "simulate_abort_at_step": null,
   "train": {
@@ -17,7 +17,7 @@
     "module": "experiments.storyworld_state_training.train_state_hrm",
     "entry": "main",
     "data": "C:/projects/GPTStoryworld/storyworlds",
-    "out": "outputs/hrm-state-100m-001/model.pt",
+    "out": "D:/HRMStoryworlds_v2/hrm_state_runs/hrm-state-100m-001/model.pt",
     "epochs": 3,
     "batch_size": 1,
     "lr": 0.0002,
