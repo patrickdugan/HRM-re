@@ -1,6 +1,6 @@
 import json
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, Iterable, List, Optional, Tuple
 
 import torch
@@ -12,7 +12,15 @@ class StoryworldStateSample:
     state_t: torch.Tensor
     state_t_next: torch.Tensor
     operators: torch.Tensor
-    meta: Dict
+    state_delta: Optional[torch.Tensor] = None
+    encounter_acceptability: Optional[float] = None
+    encounter_desirability: Optional[float] = None
+    option_visibility: Optional[float] = None
+    option_performability: Optional[float] = None
+    reaction_desirability: Optional[float] = None
+    ending_scores: Optional[torch.Tensor] = None
+    ending_acceptability: Optional[torch.Tensor] = None
+    meta: Dict = field(default_factory=dict)
 
 
 def _iter_jsonl(path: str) -> Iterable[Dict]:
@@ -124,10 +132,38 @@ def _eval_operator(node: Dict, state: Dict[str, float]) -> Optional[float]:
         for v in values:
             out *= v
         return float(out)
+    if operator_type == "Arithmetic Comparator":
+        subtype = node.get("operator_subtype") or node.get("operator_type_subtype")
+        if len(values) < 2:
+            return None
+        a, b = values[0], values[1]
+        if subtype in ("GTE", "Greater Than or Equal To"):
+            return 1.0 if a >= b else 0.0
+        if subtype in ("GT", "Greater Than"):
+            return 1.0 if a > b else 0.0
+        if subtype in ("LTE", "Less Than or Equal To"):
+            return 1.0 if a <= b else 0.0
+        if subtype in ("LT", "Less Than"):
+            return 1.0 if a < b else 0.0
+        if subtype in ("EQ", "Equal To"):
+            return 1.0 if a == b else 0.0
+        if subtype in ("NEQ", "Not Equal To"):
+            return 1.0 if a != b else 0.0
+        return None
+    if operator_type == "If Then":
+        if len(values) >= 2:
+            cond = values[0]
+            return float(values[1] if cond else (values[2] if len(values) > 2 else 0.0))
     if operator_type == "Blend":
         if len(values) >= 3:
             alpha, a, b = values[0], values[1], values[2]
             return float((1 - alpha) * a + alpha * b)
+        if len(values) == 2:
+            return float(0.5 * values[0] + 0.5 * values[1])
+    if operator_type == "Desideratum":
+        if len(values) >= 3:
+            alpha, target, base = values[0], values[1], values[2]
+            return float((1 - alpha) * base + alpha * target)
         if len(values) == 2:
             return float(0.5 * values[0] + 0.5 * values[1])
     return None
@@ -155,13 +191,19 @@ class StoryworldStateDataset(Dataset):
         max_vars: int = 1024,
         op_basis: Optional[List[str]] = None,
         include_delta: bool = True,
+        include_scripts: bool = True,
+        include_endings: bool = True,
     ):
         self.inputs = inputs
         self.max_vars = max_vars
         self.op_basis = op_basis or ["Set", "Nudge", "Blend", "Reverse", "Proximity"]
         self.include_delta = include_delta
+        self.include_scripts = include_scripts
+        self.include_endings = include_endings
 
         self.var_to_idx = self._build_var_index()
+        self.ending_ids = self._build_endings() if self.include_endings else []
+        self.ending_to_idx = {eid: i for i, eid in enumerate(self.ending_ids)}
         self.samples = self._build_samples()
 
     def _build_var_index(self) -> Dict[str, int]:
@@ -212,6 +254,36 @@ class StoryworldStateDataset(Dataset):
             if set_idx is not None:
                 ops_vec[set_idx] = 1.0
         return ops_vec
+
+    def _script_value(self, node, state: Dict[str, float]) -> Optional[float]:
+        if node is None:
+            return None
+        if isinstance(node, bool):
+            return 1.0 if node else 0.0
+        if _is_number(node):
+            return float(node)
+        if isinstance(node, dict):
+            return _eval_node(node, state)
+        return None
+
+    def _build_endings(self) -> List[str]:
+        ending_ids: List[str] = []
+        for _, kind, row in _iter_inputs(self.inputs):
+            if kind != "storyworld":
+                continue
+            ending_spool_ids = set()
+            for spool in row.get("spools", []) or []:
+                spool_type = spool.get("spool_type", "")
+                spool_id = spool.get("id", "")
+                if spool_type == "Endings" or "ending" in spool_id.lower():
+                    ending_spool_ids.add(spool_id)
+            spool_map = {s.get("id"): s for s in row.get("spools", []) or []}
+            for spool_id in ending_spool_ids:
+                spool = spool_map.get(spool_id, {})
+                for enc_id in spool.get("encounters", []) or []:
+                    if enc_id not in ending_ids:
+                        ending_ids.append(enc_id)
+        return ending_ids
 
     def _ops_vector_from_labels(self, labels: List[str]) -> torch.Tensor:
         ops_vec = torch.zeros(len(self.op_basis), dtype=torch.float32)
@@ -264,6 +336,7 @@ class StoryworldStateDataset(Dataset):
                     state_vec = self._vectorize(state_t)
                     next_vec = self._vectorize(state_t_next)
                     ops_vec = self._ops_vector(state_t, state_t_next)
+                    delta_vec = next_vec - state_vec if self.include_delta else None
                     meta = {
                         "source": path,
                         "episode_id": row.get("episode_id") or row.get("trajectory_id"),
@@ -274,6 +347,7 @@ class StoryworldStateDataset(Dataset):
                             state_t=state_vec,
                             state_t_next=next_vec,
                             operators=ops_vec,
+                            state_delta=delta_vec,
                             meta=meta,
                         )
                     )
@@ -291,7 +365,17 @@ class StoryworldStateDataset(Dataset):
                         elif _is_number(value):
                             base_state[name] = float(value)
                 for enc in row.get("encounters", []) or []:
+                    encounter_accept = None
+                    encounter_desire = None
+                    if self.include_scripts:
+                        encounter_accept = self._script_value(enc.get("acceptability_script"), base_state)
+                        encounter_desire = self._script_value(enc.get("desirability_script"), base_state)
                     for opt in enc.get("options", []) or []:
+                        option_visible = None
+                        option_performable = None
+                        if self.include_scripts:
+                            option_visible = self._script_value(opt.get("visibility_script"), base_state)
+                            option_performable = self._script_value(opt.get("performability_script"), base_state)
                         for react in opt.get("reactions", []) or []:
                             effects = react.get("after_effects") or []
                             if not effects:
@@ -300,6 +384,26 @@ class StoryworldStateDataset(Dataset):
                             state_vec = self._vectorize(base_state)
                             next_vec = self._vectorize(next_state)
                             ops_vec = self._ops_vector_from_labels(labels)
+                            delta_vec = next_vec - state_vec if self.include_delta else None
+                            reaction_desire = None
+                            if self.include_scripts:
+                                reaction_desire = self._script_value(react.get("desirability_script"), base_state)
+                            ending_scores = None
+                            ending_accept = None
+                            if self.include_endings and self.ending_ids:
+                                ending_scores = torch.zeros(len(self.ending_ids), dtype=torch.float32)
+                                ending_accept = torch.zeros(len(self.ending_ids), dtype=torch.float32)
+                                for end_enc in row.get("encounters", []) or []:
+                                    end_id = end_enc.get("id")
+                                    if end_id not in self.ending_to_idx:
+                                        continue
+                                    idx = self.ending_to_idx[end_id]
+                                    acc = self._script_value(end_enc.get("acceptability_script"), next_state)
+                                    des = self._script_value(end_enc.get("desirability_script"), next_state)
+                                    if acc is not None:
+                                        ending_accept[idx] = float(acc)
+                                    if des is not None:
+                                        ending_scores[idx] = float(des)
                             meta = {
                                 "source": path,
                                 "encounter_id": enc.get("id"),
@@ -311,6 +415,14 @@ class StoryworldStateDataset(Dataset):
                                     state_t=state_vec,
                                     state_t_next=next_vec,
                                     operators=ops_vec,
+                                    state_delta=delta_vec,
+                                    encounter_acceptability=encounter_accept,
+                                    encounter_desirability=encounter_desire,
+                                    option_visibility=option_visible,
+                                    option_performability=option_performable,
+                                    reaction_desirability=reaction_desire,
+                                    ending_scores=ending_scores,
+                                    ending_acceptability=ending_accept,
                                     meta=meta,
                                 )
                             )
