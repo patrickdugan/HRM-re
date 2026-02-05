@@ -20,6 +20,8 @@ class StoryworldStateSample:
     reaction_desirability: Optional[float] = None
     ending_scores: Optional[torch.Tensor] = None
     ending_acceptability: Optional[torch.Tensor] = None
+    ending_structural_distance: Optional[torch.Tensor] = None
+    ending_metric_distance: Optional[torch.Tensor] = None
     meta: Dict = field(default_factory=dict)
 
 
@@ -177,6 +179,64 @@ def _eval_node(node: Dict, state: Dict[str, float]) -> Optional[float]:
     return _eval_pointer(node, state)
 
 
+def _extract_comparator_constraints(node: Dict) -> List[Tuple[str, str, float]]:
+    if not isinstance(node, dict):
+        return []
+    constraints: List[Tuple[str, str, float]] = []
+    if node.get("operator_type") == "Arithmetic Comparator":
+        subtype = node.get("operator_subtype") or node.get("operator_type_subtype") or ""
+        operands = node.get("operands") or []
+        if len(operands) >= 2:
+            left = operands[0]
+            right = operands[1]
+            left_ptr = _extract_pointer_var(left) if isinstance(left, dict) else None
+            right_ptr = _extract_pointer_var(right) if isinstance(right, dict) else None
+            left_const = _eval_pointer(left, {}) if isinstance(left, dict) else None
+            right_const = _eval_pointer(right, {}) if isinstance(right, dict) else None
+
+            if left_ptr and right_const is not None:
+                var_name = _world_var_name(left_ptr[0], left_ptr[1])
+                constraints.append((var_name, subtype, float(right_const)))
+            elif right_ptr and left_const is not None:
+                var_name = _world_var_name(right_ptr[0], right_ptr[1])
+                flipped = {
+                    "GTE": "LTE",
+                    "Greater Than or Equal To": "Less Than or Equal To",
+                    "GT": "LT",
+                    "Greater Than": "Less Than",
+                    "LTE": "GTE",
+                    "Less Than or Equal To": "Greater Than or Equal To",
+                    "LT": "GT",
+                    "Less Than": "Greater Than",
+                }.get(subtype, subtype)
+                constraints.append((var_name, flipped, float(left_const)))
+
+    for key in ("operands", "conditions", "branches"):
+        children = node.get(key) if isinstance(node, dict) else None
+        if isinstance(children, list):
+            for child in children:
+                constraints.extend(_extract_comparator_constraints(child))
+    return constraints
+
+
+def _constraint_margin(value: Optional[float], op: str, target: float) -> Optional[float]:
+    if value is None:
+        return None
+    if op in ("GTE", "Greater Than or Equal To"):
+        return max(0.0, target - value)
+    if op in ("GT", "Greater Than"):
+        return max(0.0, target - value + 1e-6)
+    if op in ("LTE", "Less Than or Equal To"):
+        return max(0.0, value - target)
+    if op in ("LT", "Less Than"):
+        return max(0.0, value - target + 1e-6)
+    if op in ("EQ", "Equal To"):
+        return abs(value - target)
+    if op in ("NEQ", "Not Equal To"):
+        return 0.0 if value != target else 1.0
+    return None
+
+
 class StoryworldStateDataset(Dataset):
     """Builds (state_t, state_t+1, operators) tensors from storyworld JSONL episodes.
 
@@ -285,6 +345,51 @@ class StoryworldStateDataset(Dataset):
                         ending_ids.append(enc_id)
         return ending_ids
 
+    def _build_graph(self, world: Dict) -> Dict[str, List[str]]:
+        graph: Dict[str, List[str]] = {}
+        for enc in world.get("encounters", []) or []:
+            enc_id = enc.get("id")
+            if not enc_id:
+                continue
+            next_ids: List[str] = []
+            for opt in enc.get("options", []) or []:
+                for react in opt.get("reactions", []) or []:
+                    nxt = react.get("consequence_id")
+                    if isinstance(nxt, str) and nxt:
+                        next_ids.append(nxt)
+            graph[enc_id] = next_ids
+        return graph
+
+    def _shortest_distances(self, graph: Dict[str, List[str]], targets: List[str]) -> Dict[str, int]:
+        dist: Dict[str, int] = {}
+        if not targets:
+            return dist
+        reverse: Dict[str, List[str]] = {}
+        for src, outs in graph.items():
+            for dst in outs:
+                reverse.setdefault(dst, []).append(src)
+        queue: List[Tuple[str, int]] = []
+        for t in targets:
+            dist[t] = 0
+            queue.append((t, 0))
+        idx = 0
+        while idx < len(queue):
+            node, d = queue[idx]
+            idx += 1
+            for prev in reverse.get(node, []):
+                if prev not in dist:
+                    dist[prev] = d + 1
+                    queue.append((prev, d + 1))
+        return dist
+
+    def _ending_constraints(self, end_enc: Dict) -> List[Tuple[str, str, float]]:
+        constraints: List[Tuple[str, str, float]] = []
+        for key in ("acceptability_script", "desirability_script"):
+            node = end_enc.get(key)
+            if isinstance(node, dict):
+                constraints.extend(_extract_comparator_constraints(node))
+        return constraints
+
     def _ops_vector_from_labels(self, labels: List[str]) -> torch.Tensor:
         ops_vec = torch.zeros(len(self.op_basis), dtype=torch.float32)
         for label in labels:
@@ -364,6 +469,12 @@ class StoryworldStateDataset(Dataset):
                             base_state[name] = 1.0 if value else 0.0
                         elif _is_number(value):
                             base_state[name] = float(value)
+                graph = self._build_graph(row)
+                distances = self._shortest_distances(graph, self.ending_ids)
+                endings_by_id = {e.get("id"): e for e in row.get("encounters", []) or []}
+                ending_constraints = {
+                    eid: self._ending_constraints(endings_by_id.get(eid, {})) for eid in self.ending_ids
+                }
                 for enc in row.get("encounters", []) or []:
                     encounter_accept = None
                     encounter_desire = None
@@ -390,9 +501,15 @@ class StoryworldStateDataset(Dataset):
                                 reaction_desire = self._script_value(react.get("desirability_script"), base_state)
                             ending_scores = None
                             ending_accept = None
+                            ending_distance = None
+                            ending_metric = None
                             if self.include_endings and self.ending_ids:
                                 ending_scores = torch.zeros(len(self.ending_ids), dtype=torch.float32)
                                 ending_accept = torch.zeros(len(self.ending_ids), dtype=torch.float32)
+                                ending_distance = torch.full(
+                                    (len(self.ending_ids),), float("inf"), dtype=torch.float32
+                                )
+                                ending_metric = torch.zeros(len(self.ending_ids), dtype=torch.float32)
                                 for end_enc in row.get("encounters", []) or []:
                                     end_id = end_enc.get("id")
                                     if end_id not in self.ending_to_idx:
@@ -404,6 +521,18 @@ class StoryworldStateDataset(Dataset):
                                         ending_accept[idx] = float(acc)
                                     if des is not None:
                                         ending_scores[idx] = float(des)
+                                for eid, idx in self.ending_to_idx.items():
+                                    enc_id = enc.get("id")
+                                    if enc_id in distances:
+                                        ending_distance[idx] = float(distances.get(enc_id, float("inf")))
+                                    constraints = ending_constraints.get(eid) or []
+                                    margins: List[float] = []
+                                    for var_name, op, target in constraints:
+                                        margin = _constraint_margin(next_state.get(var_name), op, target)
+                                        if margin is not None:
+                                            margins.append(margin)
+                                    if margins:
+                                        ending_metric[idx] = float((sum(m * m for m in margins)) ** 0.5)
                             meta = {
                                 "source": path,
                                 "encounter_id": enc.get("id"),
@@ -423,6 +552,8 @@ class StoryworldStateDataset(Dataset):
                                     reaction_desirability=reaction_desire,
                                     ending_scores=ending_scores,
                                     ending_acceptability=ending_accept,
+                                    ending_structural_distance=ending_distance,
+                                    ending_metric_distance=ending_metric,
                                     meta=meta,
                                 )
                             )
