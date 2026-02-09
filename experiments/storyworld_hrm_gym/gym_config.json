@@ -29,7 +29,7 @@
     "enabled": false,
     "command": "C:/projects/node_modules/@openai/codex/vendor/x86_64-pc-windows-msvc/codex/codex.exe",
     "mode": "",
-    "sandbox": "",
+    "sandbox": "danger-full-access",
     "timeout_seconds": 900,
     "max_retries": 3,
     "backoff_seconds": 30,

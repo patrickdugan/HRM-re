@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import random
 import shutil
 import subprocess
 from datetime import datetime, timedelta
@@ -37,6 +38,7 @@ def build_run_config(template_path, out_path, run_root, run_id, codex_enabled, w
     cfg["codex_exec"]["enabled"] = codex_enabled
     cfg["codex_exec"]["timeout_seconds"] = timeout_seconds
     cfg["wait_for_artifacts"] = wait_for_artifacts
+    cfg["seed"] = random.randint(0, 2**32 - 1)
     write_json(out_path, cfg)
 
 
